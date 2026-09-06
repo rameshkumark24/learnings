@@ -43,8 +43,10 @@
 | [11-Release-and-After.md](11-Release-and-After.md) | ⭐⭐ **Staged rollout**, halting a bad release, feature flags as a kill switch, keeping old versions working |
 | ⭐⭐ [12-Legal-and-Compliance.md](12-Legal-and-Compliance.md) | **The store is a regulator** — privacy forms vs your SDKs, ⭐ **the four UGC requirements**, in-app account deletion, licences |
 | [13-AI-Features.md](13-AI-Features.md) | ⭐ **If the app uses a model** — the key cannot be in the app, serve the prompt from your server, the store's AI rules |
+| ⭐⭐ [14-Zero-to-Published.md](14-Zero-to-Published.md) | **The whole sequence, once** — idea → spec → oracle → build → real-device test → store → 12 testers × 14 days → production access → 🔴 **the AdMob throttle** → launch → ratings. Every trap is one that actually happened. |
 
-**Reference:** ⭐⭐ [**Verification Tools**](Reference/Verification-Tools.md) — what to scan, and
+**Reference:** ⭐⭐ [**Play Store Templates**](Reference/Play-Store-Templates.md) — every piece
+of writing a launch demands, fill-in-the-blank · ⭐⭐ [**Verification Tools**](Reference/Verification-Tools.md) — what to scan, and
 the mobile checks no scanner does · [Component Libraries](Reference/Component-Libraries.md) ·
 [**Distribution Options**](Reference/Distribution-Options.md) — with and without the stores
 
