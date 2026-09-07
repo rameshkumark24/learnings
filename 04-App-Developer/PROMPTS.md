@@ -64,7 +64,7 @@ your rules without you pasting them:
 ```
 ⭐⭐ WHERE EACH PROMPT DELIBERATELY REFUSES TO DECIDE FOR YOU:
 
-  DATA MODEL   ⑥ does not assume tables. Relational, document store,
+  DATA MODEL   ⑤ does not assume tables. Relational, document store,
                local-first, event log — it must CHOOSE and justify.
                ⭐ It names the ownership mechanism your stack uses,
                  rather than assuming one.
