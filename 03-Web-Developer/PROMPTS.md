@@ -1027,8 +1027,29 @@ not compress real work into fewer phases to hit a number.
 Build the next phase.
 ```
 
-**⭐ Paste this longer version once, in your first build session** — after that the short one
-is enough, because `CLAUDE.md` and `BUILD-PLAN.md` carry the rules:
+```
+⭐⭐ WHICH VERSION DO I PASTE? — the only question people get stuck on
+
+  DOES CLAUDE.md AT THE REPO ROOT CONTAIN THE PHASE PROTOCOL?
+
+    ✘ NO   ⇒ ⭐ PASTE THE LONG ONE, ONCE.
+                Then IMMEDIATELY copy its rules into CLAUDE.md.
+                You are finished with it forever.
+
+    ✔ YES  ⇒ ⭐⭐ PASTE THE SHORT ONE. Every time. Forever.
+
+⭐⭐ THE LONG VERSION IS A FALLBACK, NOT A STEP.
+   If you ever reach for it twice, that is not a prompt problem —
+   CLAUDE.md is missing the protocol. FIX THE FILE, do not keep
+   pasting the prompt. The whole point is that the rules live
+   somewhere the agent reads on its own.
+
+⭐ ONE REAL EXCEPTION: if you are working somewhere CLAUDE.md is NOT
+  read automatically — a browser chat, a different tool — paste the
+  long one. Nothing is reading your repo rules there.
+```
+
+**⭐ The long version — paste once, then move its rules into `CLAUDE.md`:**
 
 ```
 Build the next phase of the product.
@@ -1681,6 +1702,7 @@ flowchart TD
 | Scope has quietly doubled | Re-read the **NOT IN V1** section of `PRD.md` |
 | A bug keeps coming back | ⑫ — you fixed the symptom, not the class |
 | Someone shipped your differentiator | ⭐ ②b again — then ③ to decide what changes |
+| ⭐⭐ You keep pasting the LONG build prompt | `CLAUDE.md` is missing the phase protocol — put it there once and never paste it again |
 
 ```
 ⭐ AND THE HABIT WORTH MORE THAN ANY PROMPT HERE:
