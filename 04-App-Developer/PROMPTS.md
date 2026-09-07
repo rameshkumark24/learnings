@@ -1411,6 +1411,7 @@ flowchart TD
 | Scope has quietly doubled | Re-read the **NOT IN V1** section of `PRD.md` |
 | A bug keeps coming back | ⑫ — you fixed the symptom, not the class |
 | You do not know what to build next | ⭐ Read `CURRENT STATE` at the bottom of `BUILD-PLAN.md` |
+| Someone shipped your differentiator | ⭐ ②b again — then ③ to decide what changes |
 
 ```
 ⭐ AND THE ONE HABIT WORTH MORE THAN ANY PROMPT HERE:
