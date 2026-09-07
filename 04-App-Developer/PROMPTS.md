@@ -7,7 +7,8 @@
 
 ```
   THINK      ① idea → the complete app
-             ② research: risk, legal, competition
+             ② research: risk + legal
+             ②b ⭐⭐ competitors — does this deserve to exist?
              ③ harden — update it to be safer
 
   DOCUMENT   ④ PRD          ⑤ TRD
@@ -35,11 +36,11 @@
 | | **FULL** | **SHORT** |
 |---|---|---|
 | **When** | A real product. Weeks of work. Real users' data. Going to a store. | A weekend build, a prototype, a tool for yourself, or testing an idea |
-| **Think** | ① ② ③ | ① only — and ask it for the top 3 risks at the end |
+| **Think** | ① ② ②b ③ | ① + ⭐ ②b — competitors is the one research step worth keeping even on a weekend build |
 | **Document** | ④ ⑤ ⑥ ⑦ ⑧ ⑨ | ④ **short** PRD + ⑤ the data model half + ⑧ edge cases |
 | **Build** | ⑩ then ⑪–⑬ per phase | ⑩ then ⑪–⑫ per phase |
 | **Ship** | ⑭ ⑮ ⑯ | ⑭ if anyone else will use it |
-| **Sessions before code** | ≈ 8–10 | ≈ 3 |
+| **Sessions before code** | ≈ 9–11 | ≈ 3–4 |
 
 ```
 ⭐⭐ THE TWO YOU NEVER SKIP, ON EITHER TRACK:
@@ -195,22 +196,17 @@ I can correct it.
 
 ---
 
-# ② Research — risk, legal, competition
+# ② Research — risk and legal
 
-⚙️ **Strongest model · `think hard` · web search ON** — competitors and regulations must be real and current, not recalled.
+⚙️ **Strongest model · `think hard` · web search ON** — regulations must be real and current, not recalled. ⭐ Competitors are the next step, ②b.
 
 ```
 Research this app properly before we design it. Use what we defined in
 this session as the product.
 
-I want four things:
+I want three things. ⭐ Competitors are ②b — do not cover them here.
 
-1. WHO ALREADY DOES THIS
-   Real named competitors. What they charge, what they do well, and
-   specifically what users complain about. If there are none, tell me
-   whether that is an opportunity or a warning — and which one, here.
-
-2. ⭐ THE RISK REGISTER
+1. ⭐ THE RISK REGISTER
    Everything that can go wrong with this product, not just the code:
    · TECHNICAL — what is genuinely hard to build correctly
    · DEPENDENCY — whose API or platform can kill this app by changing
@@ -220,7 +216,7 @@ I want four things:
    · ADOPTION — why people will download it and not come back
    Rank by (likelihood × damage) and say which ones change the design.
 
-3. ⭐⭐ THE LEGAL AND COMPLIANCE PICTURE
+2. ⭐⭐ THE LEGAL AND COMPLIANCE PICTURE
    Be concrete and specific to what this app actually does:
    · What personal data does it touch, and what does that trigger?
      (GDPR / DPDP / CCPA — say which apply and why)
@@ -236,7 +232,7 @@ I want four things:
      each carry their own rules and their own store scrutiny
    · Licences of anything we would depend on — AGPL is a trap
 
-4. ⭐ WHAT WOULD GET THIS REJECTED OR PULLED
+3. ⭐ WHAT WOULD GET THIS REJECTED OR PULLED
    Store rejection reasons specific to this app, ranked by likelihood.
 
 For each finding: what it is · why it applies to THIS app · what it
@@ -253,7 +249,83 @@ I am not a lawyer and neither are you. Mark clearly which items are
 
 ```
 ⭐⭐ THE GATE — you know the top three risks, and at least one of them
-   has changed something about the product.
+   has changed something about the product. Then go to ②b.
+```
+
+---
+
+# ②b ⭐⭐ Competitor analysis — does this deserve to exist?
+
+⚙️ **Strongest model · `think hard` · ⭐⭐ web search ON** — every name, price and review here must be real. This step is worthless from memory.
+
+```
+Research the competition properly. Use the product we defined in this
+session. ⭐ Everything here must come from actually looking — real
+names, real prices, real reviews. If you cannot verify something, say
+so rather than filling the gap with something plausible.
+
+1. WHO THEY ACTUALLY ARE — three to five of them
+   For each: what it does · what it charges and on what model · roughly
+   how big · how long it has existed.
+   ⭐ INCLUDE THE NON-OBVIOUS COMPETITOR: the spreadsheet, the WhatsApp
+   group, the notebook, or doing nothing at all. Those beat most apps,
+   and they never appear on a competitor list.
+
+2. ⭐⭐ MINE THE 3-STAR REVIEWS — the highest-signal source there is
+   NOT 1-star: mostly crashes, billing, and people who wanted a
+   different product.
+   NOT 5-star: no information.
+   ⭐⭐ THREE-STAR IS PEOPLE WHO USE IT, KEEP IT, AND ARE FRUSTRATED.
+     That is your wedge, written in their own words.
+   Quote the actual complaints. Group them into themes and rank them
+   by how often they appear.
+
+3. ⭐⭐ FOR EACH TOP COMPLAINT: WHY HAS IT NOT BEEN FIXED?
+   The most important question on this page. They know about it. They
+   did not fix it. Which is it:
+   · DELIBERATE — fixing it breaks their pricing or their model
+   · SEGMENT — they serve someone else, and this complainer is not
+     their customer
+   · HARD — genuinely difficult, and it will be just as hard for me
+   · MISSED — nobody got to it. ⭐ The rarest answer, and the only one
+     that is straightforwardly good news.
+   ⇒ ⭐ IF YOU CANNOT TELL, SAY SO. A guess here is worse than a gap,
+     because I will build on it.
+
+4. HOW THEY GET USERS
+   Their real acquisition: store search, content, paid, a partnership,
+   a community, being the default somewhere.
+   ⭐ For most apps distribution decides the outcome more than the
+   product does. If they all use the same channel, say so — that is
+   either where the users are, or a blind spot I can use.
+
+5. ⭐ WHO TRIED THIS AND DIED
+   Abandoned apps, dead startups, projects that stopped updating, and
+   the visible reason.
+   ⇒ ⭐⭐ A GRAVEYARD TEACHES MORE THAN A LEADERBOARD.
+
+6. ⭐⭐ THE PARITY TRAP
+   What will users expect on day one JUST BECAUSE every competitor has
+   it? List them — then tell me which I can refuse to build and still
+   survive.
+   ⭐ This is the difference between a v1 that ships and one that never
+   does.
+
+7. THE HONEST VERDICT
+   Is there a real gap here, or does it only look like one from the
+   outside? Say which.
+   ⭐ If this space is well served and my angle is thin, LEAD WITH THAT.
+
+DO NOT give me a feature comparison table. I do not need to know who
+has dark mode. I need to know what people are unhappy about, why
+nobody has fixed it, and whether I actually can.
+```
+
+```
+⭐⭐ THE GATE — you can name ONE complaint that appears across multiple
+   competitors, and say why it has not been fixed.
+   ⇒ That sentence is your product's reason to exist.
+     If you cannot write it, you do not have one yet.
 ```
 
 ---
@@ -1031,6 +1103,12 @@ DO NOT be encouraging. Do not tell me it looks great. If the answer to
 ```
 The app works. Now tell me honestly how anyone finds out it exists.
 
+0. ⭐ RE-CHECK THE COMPETITORS BEFORE ANYTHING ELSE
+   My ②b research is months old now. What has changed — new entrants,
+   price changes, a competitor who shipped the thing I built around?
+   ⇒ ⭐⭐ IF SOMEONE CLOSED MY GAP WHILE I WAS BUILDING, I need to know
+     now, not after I have written a store listing claiming it.
+
 1. ⭐⭐ WHERE MY USERS ALREADY ARE
    Not "social media". The specific places the person from the PRD
    already spends time — subreddits, forums, Discords, WhatsApp
@@ -1165,8 +1243,9 @@ For each item: done, not done, or not applicable — with a reason.
 ```mermaid
 flowchart TD
     subgraph THINK["①–③ THINK · once, at the start"]
-        A["① Idea → the complete app"] --> B["② Research<br>risk · legal · competition"]
-        B --> C["③ Harden<br>apply the research"]
+        A["① Idea → the complete app"] --> B["② Research<br>risk · legal"]
+        B --> BB["②b Competitors<br>⭐ does this deserve to exist?"]
+        BB --> C["③ Harden<br>apply the research"]
     end
 
     subgraph DOC["④–⑨ DOCUMENT · once · these files persist"]
@@ -1206,6 +1285,7 @@ flowchart TD
     O -->|"no — all phases DONE"| FULLSEC
     P -.->|"if the UI still feels generic"| G
     R -.->|"next version"| J
+    Q -.->|"re-check competitors first"| BB
 ```
 
 ---
@@ -1215,31 +1295,32 @@ flowchart TD
 | Session | You paste | You get |
 |---|---|---|
 | **1** | ① | The full feature set, including things you had not thought of |
-| **2** | ② | Competitors, risks, legal — with web search on |
-| **3** | ③ | A **changed** feature list. If nothing changed, redo ② |
-| **4** | ④ | `PRD.md` |
-| **5** | ⑤ · ⭐ plan mode | `TRD.md` + the data model |
-| **6** | ⑥ then ⑦ | Flows, then UI direction |
-| **7** | ⑧ | `EDGE-CASES.md` |
-| **8** | ⑨ | The money model |
-| **9** | ⑩ · ⭐ plan mode | `BUILD-PLAN.md` — **the file everything after depends on** |
-| **10** | ⭐⭐ the **long** ⑪, once | Phase 1 built. Now copy its rules into `CLAUDE.md` |
-| **11** | `/code-review` → ⑫ | Bugs fixed, and why they happened |
-| **12** | ⑬ *(phase 1 is a vertical slice, so yes)* | The security pass |
-| **13** | **`build the next phase of app`** | Phase 2 |
-| **14** | `/code-review` → ⑫ | …and repeat 13–14 per phase |
+| **2** | ② | Risks and legal — with web search on |
+| **3** | ⭐⭐ ②b | Competitors, their 3-star complaints, and why nobody fixed them |
+| **4** | ③ | A **changed** feature list. If nothing changed, redo ②/②b |
+| **5** | ④ | `PRD.md` |
+| **6** | ⑤ · ⭐ plan mode | `TRD.md` + the data model |
+| **7** | ⑥ then ⑦ | Flows, then UI direction |
+| **8** | ⑧ | `EDGE-CASES.md` |
+| **9** | ⑨ | The money model |
+| **10** | ⑩ · ⭐ plan mode | `BUILD-PLAN.md` — **the file everything after depends on** |
+| **11** | ⭐⭐ the **long** ⑪, once | Phase 1 built. Now copy its rules into `CLAUDE.md` |
+| **12** | `/code-review` → ⑫ | Bugs fixed, and why they happened |
+| **13** | ⑬ *(phase 1 is a vertical slice, so yes)* | The security pass |
+| **14** | **`build the next phase of app`** | Phase 2 |
+| **15** | `/code-review` → ⑫ | …and repeat 14–15 per phase |
 | **every 3rd** | the document check | Documents that still match reality |
 | **last** | ⑬ full → ⑭ → ⑮ → ⑯ | Shipped |
 
 ```
-⭐⭐ AFTER SESSION 10, YOUR TYPING IS BASICALLY:
+⭐⭐ AFTER SESSION 11, YOUR TYPING IS BASICALLY:
 
    "build the next phase of app"
    /code-review
    <paste the findings>
    ...repeat...
 
-  ⭐ THAT IS THE WHOLE POINT. The nine sessions before it exist so
+  ⭐ THAT IS THE WHOLE POINT. The ten sessions before it exist so
     that those three lines are enough.
 ```
 
@@ -1263,7 +1344,7 @@ flowchart TD
 |---|---|---|---|
 | ⑤ TRD · ⑩ Build plan | strongest | ⭐⭐ `ultrathink` **+ plan mode** | Most expensive to get wrong; everything is built on them |
 | ⑧ Edge cases · ⑬ Security | strongest | ⭐⭐ `ultrathink` | Enumeration under pressure — depth converts directly into findings |
-| ① ② ③ ⑥ ⑨ ⑭ ⑮ | strongest | ⭐ `think hard` | Judgement and trade-offs |
+| ① ② ②b ③ ⑥ ⑨ ⑭ ⑮ | strongest | ⭐ `think hard` | Judgement and trade-offs |
 | ⑦ UI · ⑫ Fix bugs | strongest | `think` | Escalate if a bug returns — that means the cause was never found |
 | ④ PRD · ⑪ Build · ⑯ Store | strongest / any | standard | Writing down decisions, or checklist work |
 
@@ -1274,7 +1355,7 @@ flowchart TD
     You review the thinking BEFORE the code exists, which is the only
     point where changing your mind is still cheap.
 
- ② ⭐ WEB SEARCH ON FOR ②, ⑨ AND ⑮. Competitors, regulations, prices
+ ② ⭐ WEB SEARCH ON FOR ②, ②b, ⑨ AND ⑮. Competitors, regulations, prices
     and communities must be REAL and CURRENT. Recalled facts are the
     one place these prompts will quietly hand you something wrong.
 
