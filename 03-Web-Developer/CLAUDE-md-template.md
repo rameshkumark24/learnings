@@ -92,6 +92,31 @@ below and fill in the angle brackets. Commit it. Update it whenever a convention
 - Do not agree with me if I ask for something that will leak data or
   cost money. Say so first.
 
+## ⭐⭐ How we build — the phase protocol
+When I say "build the next phase", this is what it means:
+1. Read BUILD-PLAN.md. Find the FIRST phase not marked DONE.
+2. Tell me which phase it is, its GOAL and its DONE WHEN. Then build it.
+3. Read the edge cases that phase owns before writing code.
+4. If the phase says PLAN MODE: yes — plan it and STOP for approval.
+5. ⭐ If the plan is now wrong or out of date, say so BEFORE building.
+   Do not build the wrong thing correctly.
+6. Stay inside the phase. Do not build ahead.
+7. When finished: mark the phase DONE in BUILD-PLAN.md and rewrite its
+   CURRENT STATE section. ⭐⭐ THIS IS HOW THE NEXT SESSION KNOWS WHERE
+   IT IS — never skip it.
+8. Then tell me: what changed · what to look at · what worried you ·
+   what it did to the bundle and the LCP · what the next phase is. Stop.
+⭐ A phase is DONE when its DONE WHEN test passes — not when the code
+  exists.
+
+## ⭐ Every third phase — the document check
+Before starting, re-read PRD.md and TRD.md and tell me:
+- what we have built that CONTRADICTS them
+- what decision we changed but never wrote down
+- which sections are now wrong, including any ROUTE that moved
+⭐⭐ A stale document is followed confidently. That is worse than no
+  document. Fix them before continuing, or tell me to.
+
 ## Plan first when
 - The change touches auth, payments, or user data.
 - The change spans more than three files.

@@ -5,15 +5,16 @@ one specific build.
 
 ---
 
-## ⭐⭐ Start here — the two memory files
+## ⭐⭐ Start here — the three files that do the work
 
 | File | What it is |
 |---|---|
+| ⭐⭐ **[PROMPTS.md](PROMPTS.md)** | **The prompt library — my actual workflow.** Idea → research → competitors → harden → PRD/TRD/URLs → **design** → edge cases → money → build plan → **“build the next phase”** → review → security → Core Web Vitals → SEO → launch. Paste-as-is, no blanks. **Start here when you are building something.** |
 | ⭐⭐ **[AGENT-CONTEXT.md](AGENT-CONTEXT.md)** | **The memory.** Keep it in Notion. Paste it into a new chat before asking for any web work. Written *to the agent*, self-sufficient, and every other file here is depth behind a line in it. |
 | ⭐⭐ **[CLAUDE-md-template.md](CLAUDE-md-template.md)** | **The per-project rules file.** Lives at the root of the repo, read automatically every session. |
 
-> ⭐ **Use both.** Notion carries the rules *between* projects. `CLAUDE.md` carries the specifics *of*
-> this one.
+> ⭐ **Use all three.** `PROMPTS.md` is the sequence. Notion carries the rules *between* projects.
+> `CLAUDE.md` carries the specifics *of* this one.
 
 ---
 
