@@ -8,7 +8,7 @@
 
 | File | What it is |
 |---|---|
-| ⭐⭐ **[PROMPTS.md](PROMPTS.md)** | **The 14-step prompt library.** Research → spec → architecture → database → edge cases → build → test → security → quality → launch. One copy-paste prompt per step, each with a gate. **Start here when you are building something.** |
+| ⭐⭐ **[PROMPTS.md](PROMPTS.md)** | **The prompt library — my actual workflow.** Idea → research → harden → PRD/TRD/flows → edge cases → money → build plan → **“build the next phase”** → review → security → quality → reach → store. Paste-as-is, no blanks to fill. **Start here when you are building something.** |
 | ⭐⭐ **[AGENT-CONTEXT.md](AGENT-CONTEXT.md)** | **The memory.** Keep it in Notion. Paste it into a new chat before asking for any mobile work. Written *to the agent*, self-sufficient. It is also Step 0 of the prompt library. |
 | ⭐⭐ **[CLAUDE-md-template.md](CLAUDE-md-template.md)** | **The per-project rules file.** Lives at the repo root, read automatically every session. |
 

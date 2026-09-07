@@ -1,752 +1,763 @@
-# 🎯 App Development — The Prompt Library
+# 🎯 App Development — My Prompt Library
 
-> ⭐⭐ **This is the working file. Fourteen steps, one prompt each, in order.**
-> Copy the prompt, fill the `<angle brackets>`, paste. Every prompt ends in a **gate** —
-> a question you must be able to answer before the next step.
+> ⭐⭐ **These are written to be pasted as-is.** No blanks to fill. Each one reads the session
+> and the repo and works out its own context — so the same prompt works on any app, at any stage.
 
-**Two rules that make all fourteen work:**
-
-```
-⭐⭐ ① PASTE STEP 0 ONCE, AT THE START OF EVERY NEW CHAT.
-      Without it the agent does not know how you work and will
-      default to generic output.
-
-⭐⭐ ② THE "DO NOT" LINES ARE NOT PADDING. They are the single
-      biggest lever on what comes back. Never trim them to save space.
-```
-
-| # | Step | Produces | Plan mode |
-|---|---|---|---|
-| **0** | ⭐⭐ The context block | The agent knows your rules | — |
-| **1** | Target customer & reality check | A go / no-go, honestly argued | — |
-| **2** | Scope — and the NOT list | The v1 boundary | — |
-| **3** | ⭐⭐ The spec document | `SPEC.md` — the reference every future chat reads | — |
-| **4** | Architecture & stack | `ARCHITECTURE.md` + the decisions | ⭐⭐ yes |
-| **5** | ⭐ Database & data model | Schema + RLS from day one | ⭐⭐ yes |
-| **6** | ⭐⭐ Edge cases & failure catalogue | `EDGE-CASES.md` — the file that prevents the rewrite | — |
-| **7** | Design system | Tokens + the owned component set | — |
-| **8** | Frontend — screen by screen | Screens with all five states | ⭐ per screen |
-| **9** | Backend & API | Endpoints, validated and authorized | ⭐⭐ yes |
-| **10** | ⭐⭐ Offline, sync & lifecycle | The mobile-only layer | ⭐⭐ yes |
-| **11** | Testing | Tests that would have caught real bugs | — |
-| **12** | ⭐⭐ Security audit | The adversarial pass | — |
-| **13** | ⭐ Quality analysis | An honest score, not a victory lap | — |
-| **14** | Store submission & launch | Shipped, with a kill switch | — |
-
----
-
-# ⭐⭐ STEP 0 · The context block
-
-**Paste this first in every new chat, before any other prompt.** It replaces ten rounds of
-correction later.
+**How I actually work, and where each prompt lands:**
 
 ```
-CONTEXT — READ BEFORE ANY WORK.
+  THINK      ① idea → the complete app
+             ② research: risk, legal, competition
+             ③ harden — update it to be safer
 
-HOW I WORK
-- I vibe code. You write most of the code. Keep diffs small and tell me
-  exactly what to look at and what worried you.
-- Plan before code on anything non-trivial: more than one file, or any
-  auth / payment / user-data / native change. Wait for my approval.
-- Never run git push, git reset --hard, git rebase, a migration, or a
-  store submission.
-- Never add a dependency without naming it and why — and in mobile,
-  say whether it needs NATIVE code, because that ends OTA updates.
-- Never refactor what I did not ask about. Never delete or weaken a
-  test to make something pass.
-- If you are unsure, say so. If I ask for something that will leak
-  data, drain battery, or get rejected — say so BEFORE building it.
+  DOCUMENT   ④ PRD          ⑤ TRD
+             ⑥ design flow + app flow
+             ⑦ UI/UX enhancement
+             ⑧ edge cases   ⑨ how it makes money
 
-FIVE FACTS THAT DRIVE EVERY MOBILE DECISION
-1. I cannot hotfix. Store review is 1-3 days, so a shipped bug is live
-   for a week. OTA is the only fast path and it cannot change native code.
-2. Old versions never die. Users do not update. Every API change is
-   additive or a migration — never breaking.
-3. The network is hostile: tunnels, 2G, airplane mode, captive portals
-   that resolve DNS and block everything. Offline is a state I DESIGN,
-   not an error you catch.
-4. The OS kills the app in the background without warning.
-5. The bundle is public. Anyone can unzip the APK. There are NO secrets
-   in a mobile app.
+  BUILD      ⑩ ⭐⭐ THE BUILD PLAN — this is what makes ⑪ work
+             ⑪ ⭐⭐ "build the next phase of app"   ← repeat until done
+             ⑫ /code-review → fix the bugs
+             ⑬ security check
 
-STACK
-Expo (React Native) + TypeScript · Expo Router · TanStack Query with
-persistence · expo-secure-store for tokens, MMKV/AsyncStorage for the
-rest · Supabase / my API · Sentry · EAS Build + EAS Update.
-Money as integers in the smallest unit. Dates stored UTC, formatted at render.
-
-NON-NEGOTIABLE
-- Tokens in secure store. NEVER AsyncStorage — it is plain text on disk.
-- No secrets in the bundle. If a call needs a secret, the app calls MY
-  API and MY API holds it.
-- Every query filters by the authenticated user, SERVER-SIDE.
-- RLS on and forced. Never return a whole row — use an explicit shape.
-- Never log PII. Crash reports leave the device.
-- Permissions asked at the moment of use, with a reason. Never on launch.
-
-STOP DOING THESE
-- Claiming it works when you only ran the simulator. Say "simulator only".
-- Adding a native dependency without flagging that it ends OTA.
-- Inventing a package, an API, or a config option.
-- Silently changing files outside the task.
-- Swallowing an error so the screen goes blank.
-- Ignoring Android. "Works on iOS" is half a job.
-- Agreeing with me when I am wrong.
-
-Acknowledge in one line, then wait for my actual request.
+  SHIP       ⑭ quality enhancement
+             ⑮ how it reaches real users
+             ⑯ Play Store
 ```
 
 ---
 
-# STEP 1 · Target customer & the reality check
+## ⭐⭐ Read this once — why "build the next phase of app" works
 
-**Do this before writing a line.** The most expensive app is the one nobody needed.
-
-```
-I am considering building: <one sentence — what it does, for whom>
-
-Act as a skeptical product strategist, not a supporter. I want the
-honest version, not encouragement.
-
-Give me:
-
-1. WHO EXACTLY IS THIS FOR
-   Not "small businesses". A specific person: their role, their day,
-   the moment this need appears. If you cannot name that moment
-   concretely, say the idea is too vague and stop.
-
-2. WHAT THEY DO TODAY INSTEAD
-   Every product replaces something — a spreadsheet, WhatsApp, paper,
-   a competitor, or doing nothing. Name it. "Nothing" is the hardest
-   competitor to beat, not the easiest.
-
-3. WHY THEY WOULD SWITCH
-   Switching costs are real: learning, migrating, trusting. What is
-   the 10x — not 10% — improvement that beats that cost?
-
-4. WHO ALREADY DOES THIS
-   Real competitors with names. What they charge. What they are bad at.
-   If there are none, that is usually a bad sign, not a good one —
-   tell me which it is here.
-
-5. THE THREE REASONS THIS FAILS
-   Ranked by likelihood. Be specific and unkind.
-
-6. THE KILL CRITERIA
-   What would I have to learn in the next two weeks that should make
-   me abandon this? Make it concrete and testable.
-
-7. THE SMALLEST TEST
-   What could I do in ONE WEEK, without building the app, that would
-   tell me whether this is real?
-
-DO NOT validate the idea to be encouraging. Do not give generic startup
-advice. Do not tell me the market is large. If this looks like a bad
-idea, your first line should say so plainly.
-```
+> You told me your build prompt is five words. **That is correct, and it should stay five words.**
+> A long prompt every session is how context drifts and the app becomes inconsistent.
 
 ```
-⭐⭐ THE GATE — do not go to step 2 until:
-   · you can name one real person who has this problem
-   · you know what they do today instead
-   · you have written down what would make you quit
+⭐⭐ FIVE WORDS ONLY WORK IF THE AGENT CAN FIND ITS OWN PLACE.
+   That is not a prompt problem. It is a FILE problem.
+
+  PROMPT ⑩ writes BUILD-PLAN.md — numbered phases, each with a
+  definition of done and a status marker.
+
+  ⇒ ⭐ THEN "build the next phase of app" IS SELF-LOCATING. The agent
+    reads the plan, finds the first phase not marked DONE, and knows
+    what it is building and when to stop.
+
+  ⇒ ⭐⭐ WITHOUT THAT FILE, THE SAME FIVE WORDS PRODUCE A DIFFERENT
+    APP EVERY SESSION — and you will not notice for three weeks.
+
+⭐ SO: DO ⑩ ONCE, PROPERLY. It is the highest-leverage step here.
+```
+
+**Also do this once per project** — put `CLAUDE.md` at the repo root so every session reads
+your rules without you pasting them:
+[CLAUDE-md-template.md](CLAUDE-md-template.md)
+
+---
+
+# ① The idea → the complete app
+
+**You have a rough idea. This turns it into a full product without you specifying it.**
+
+```
+I have an app idea. I want you to develop it into a complete product
+with me — you know more about what apps need than I have written down,
+so fill the gaps rather than waiting for me to specify everything.
+
+MY IDEA:
+<describe it however roughly — one line is fine>
+
+Work through this with me:
+
+1. WHAT I ACTUALLY MEAN
+   Restate my idea as you understand it. If it is ambiguous, give me
+   the two or three different products it could become and ask which
+   one I mean. Do not silently pick one.
+
+2. THE COMPLETE FEATURE SET
+   Everything this app needs to actually work for a real user — not
+   just what I mentioned. Group as:
+   · CORE — without these it is not the product
+   · EXPECTED — users will assume these exist and be annoyed if not
+     (auth, search, edit, delete, settings, notifications...)
+   · DIFFERENTIATING — the reason someone picks this over the
+     alternative
+   · LATER — real ideas, deliberately deferred
+
+3. THE ONE CORE LOOP
+   The single action a user repeats. If the app has no repeated
+   action, say so plainly — that is usually a fatal problem, not a
+   detail.
+
+4. EVERY SCREEN
+   The full list with one line each on what it is for.
+
+5. WHAT I HAVE NOT THOUGHT ABOUT
+   The parts of this that are harder than they look. Usually: sync,
+   offline, permissions, payments, moderation, notifications, or
+   someone else's API.
+
+6. THE THREE DECISIONS I MUST MAKE NOW
+   The ones that are expensive to reverse later. Give me the options
+   and your recommendation, not just the question.
+
+DO NOT ask me one question at a time — batch everything you need.
+DO NOT flatter the idea. If it has a fundamental problem, lead with
+that. Where you are assuming something, mark it as an assumption so
+I can correct it.
+```
+
+```
+⭐ THE GATE — you can say the core loop in one sentence, and the
+   feature list contains things you did not think of.
 ```
 
 ---
 
-# STEP 2 · Scope — and the NOT list
+# ② Research — risk, legal, competition
 
 ```
-Product: <one sentence from step 1>
-Target user: <the specific person from step 1>
+Research this app properly before we design it. Use what we defined in
+this session as the product.
 
-Define v1. The goal is the SMALLEST thing a real user would use weekly
-or pay for — not a demo, not everything.
+I want four things:
 
-Give me:
+1. WHO ALREADY DOES THIS
+   Real named competitors. What they charge, what they do well, and
+   specifically what users complain about. If there are none, tell me
+   whether that is an opportunity or a warning — and which one, here.
 
-1. THE ONE CORE LOOP
-   The single action a user repeats. Everything else supports it.
-   If there are two, pick one and tell me why.
+2. ⭐ THE RISK REGISTER
+   Everything that can go wrong with this product, not just the code:
+   · TECHNICAL — what is genuinely hard to build correctly
+   · DEPENDENCY — whose API or platform can kill this app by changing
+     their terms, their pricing, or their rate limits
+   · OPERATIONAL — what breaks when it works: support load, abuse,
+     moderation, cost at scale
+   · ADOPTION — why people will download it and not come back
+   Rank by (likelihood × damage) and say which ones change the design.
 
-2. V1 FEATURES — maximum 5
-   For each: what it does, why it cannot be cut, the screens it needs.
+3. ⭐⭐ THE LEGAL AND COMPLIANCE PICTURE
+   Be concrete and specific to what this app actually does:
+   · What personal data does it touch, and what does that trigger?
+     (GDPR / DPDP / CCPA — say which apply and why)
+   · Consent: what must be asked, when, and how it is recorded
+   · Data retention and deletion — including the in-app account
+     deletion Apple requires if users can sign up
+   · Age: does this need age gating, and does it touch children's data
+   · If users can post content: moderation duties, and Apple's four
+     requirements — filter, report, block, contact
+   · If it takes money: what the payment rules force (IAP vs Stripe),
+     refunds, subscription disclosure, auto-renew terms
+   · Anything sector-specific — health, finance, education, dating
+     each carry their own rules and their own store scrutiny
+   · Licences of anything we would depend on — AGPL is a trap
 
-3. THE NOT LIST — this is the important half
-   Everything a reasonable person would expect that v1 will NOT do,
-   each with one line on why it waits. Be aggressive. Include the
-   things I will be tempted by: social features, sharing, an analytics
-   dashboard, settings nobody changes, an onboarding tour, dark mode.
+4. ⭐ WHAT WOULD GET THIS REJECTED OR PULLED
+   Store rejection reasons specific to this app, ranked by likelihood.
 
-4. THE SCREEN LIST
-   Every screen v1 needs. If it is more than 8, cut a feature and tell
-   me which one.
+For each finding: what it is · why it applies to THIS app · what it
+forces us to do differently.
 
-5. WHAT MAKES THIS HARD
-   The one or two things that will take 3x longer than they look.
-   Usually sync, offline, payments, permissions, or a third-party API
-   that lies about its reliability.
+DO NOT give me a generic compliance overview. If something does not
+apply, say it does not apply and why. Where a rule depends on
+jurisdiction or on facts I have not given you, say what you need to
+know — do not guess and do not hedge everything.
 
-6. THE MOBILE QUESTION
-   Does this genuinely need to be an app? What would it lose as a
-   mobile website? If the honest answer is "nothing", say so — an app
-   costs store review, two platforms, and no hotfix.
-
-DO NOT pad the feature list. Do not add "nice to haves". A short v1
-that ships beats a complete one that does not.
+I am not a lawyer and neither are you. Mark clearly which items are
+"you must get advice on this" versus "this is standard practice".
 ```
 
 ```
-⭐⭐ THE GATE — you have a NOT list, and it is LONGER than the yes list.
+⭐⭐ THE GATE — you know the top three risks, and at least one of them
+   has changed something about the product.
 ```
 
 ---
 
-# ⭐⭐ STEP 3 · The spec document
+# ③ Harden — update it to be safer
 
-> **This is the file every future chat reads.** It is why chat #40 still builds the same app as
-> chat #1. Write it once, keep it in the repo, paste or link it whenever you start work.
+**The step that closes the loop.** Research is worthless if the design does not change.
 
 ```
-Write SPEC.md for this app. This document is the permanent reference —
-every future session reads it before touching code, so it must stand
-alone with no memory of this conversation.
+Take everything from the research and update the product design so the
+risks are actually handled. Do not summarise the research again — CHANGE
+the design and show me the diff in decisions.
 
-Product: <one sentence>
-Target user: <from step 1>
-Core loop: <from step 2>
-V1 features: <from step 2>
-NOT in v1: <the not list>
+Go through:
 
-Structure it exactly like this:
+1. WHAT CHANGES IN THE FEATURE SET
+   Which features get modified, restricted, delayed, or dropped because
+   of a risk or a legal finding. For each: what it was, what it is now,
+   and which finding forced it.
 
-1. WHAT THIS IS — three sentences maximum. Someone reading only this
-   section knows what the app does and who it is for.
+2. WHAT WE MUST NOW BUILD THAT WE HAD NOT PLANNED
+   Consent screens, an account-deletion flow, a data-export path,
+   moderation tooling, an age gate, an audit trail, a "report" button.
+   These are features. They take time. Add them to the list properly
+   rather than leaving them implied.
 
-2. THE USER — who they are, the moment of need, what they used before.
+3. THE DATA MINIMISATION PASS
+   Go field by field through what we planned to collect and ask: do we
+   actually need this? What we do not store cannot leak, cannot be
+   subpoenaed, and does not appear on a privacy form. Cut what we can.
 
+4. WHERE EACH RULE IS ENFORCED
+   For every rule that matters — say explicitly whether it is enforced
+   on the DEVICE or on the SERVER. Anything a user could tamper with
+   belongs on the server, and if we have put it on the device, move it
+   and say so.
+
+5. THE THINGS WE ARE ACCEPTING
+   Risks we are choosing to live with for v1. Name them. An accepted
+   risk that is written down is a decision; one that is not is an
+   accident waiting to be discovered.
+
+DO NOT weaken the product to eliminate every risk. Tell me where the
+safe option costs too much and the honest trade is to accept it.
+```
+
+```
+⭐ THE GATE — the feature list is different from the one in step ①.
+   If nothing changed, the research was not applied.
+```
+
+---
+
+# ④ PRD — the product document
+
+```
+Write PRD.md from everything in this session.
+
+This is the permanent product reference. Every future session reads it
+before touching code, so it must stand completely alone — assume the
+reader has no memory of this conversation.
+
+1. WHAT THIS IS — three sentences. Someone reading only this knows what
+   the app does and who it is for.
+2. THE USER — who they are, the moment of need, what they do today
+   instead.
 3. THE CORE LOOP — the repeated action, step by step, as the user
    experiences it.
-
 4. FEATURES — each with: what it does · what "done" means · what it
    explicitly does NOT do.
+5. NOT IN V1 — with the reason each one waits.
+6. SCREENS — each one's purpose, and what it shows with no data.
+7. ⭐⭐ THE RULES OF THE DOMAIN — the business logic that is not
+   obvious. What is the maximum · what happens on a conflict · who can
+   see what · what is irreversible · what must never happen twice.
+   This section prevents more rework than all the others combined.
+8. COMPLIANCE REQUIREMENTS — from step ②, as product requirements
+   rather than legal notes.
+9. VOCABULARY — the exact words this app uses, and the words it must
+   never use. Pick one and never drift.
+10. OPEN QUESTIONS — what is genuinely undecided. Do not paper over
+    these with a guess.
 
-5. NOT IN V1 — the full list, with the reason each one waits.
-
-6. SCREENS — every screen, its purpose, and what it shows when there
-   is no data yet.
-
-7. THE RULES OF THE DOMAIN — the business logic that is not obvious.
-   This is the section that saves the most rework later: what is the
-   maximum, what happens on a conflict, who can see what, what is
-   irreversible, and what must never happen twice.
-
-8. VOCABULARY — the exact words the app uses for its concepts, and the
-   words it must never use. Pick one and never drift: "trip" or
-   "journey", never both.
-
-9. OPEN QUESTIONS — what is genuinely undecided. Do not paper over
-   these with a guess; list them so I decide deliberately.
-
-DO NOT include implementation, framework choices, or code. This is
-what and why, never how. Ask me about anything ambiguous BEFORE
-writing rather than inventing an answer — but ask everything in one
-batch, not one question at a time.
+DO NOT include implementation, frameworks, or code. This is what and
+why, never how.
 ```
 
 ```
-⭐⭐ THE GATE — hand SPEC.md to a fresh chat with no other context and
-   ask "what does this app do, and who is it for?" If the answer is
-   right, the spec works. If not, fix it now — not after 40 files exist.
+⭐⭐ THE GATE — paste PRD.md into a brand-new chat with nothing else and
+   ask "what is this app and who is it for?" If the answer is right, it
+   works. Fix it now, not after 40 files exist.
 ```
 
 ---
 
-# STEP 4 · Architecture & stack · ⭐⭐ plan mode
+# ⑤ TRD — the technical document
 
 ```
-Read SPEC.md. Enter plan mode. Do not write code.
+Write TRD.md — how we build what PRD.md describes. Read the PRD first
+and trace every technical choice back to a product requirement.
 
-Design the architecture for this app. My defaults are Expo + TypeScript,
-Expo Router, TanStack Query, Supabase — argue against any of them if
-this app is a bad fit, and say so early rather than politely going along.
+1. THE STACK — each choice with the reason, and what it costs at 1,000
+   users. Argue against my defaults if this app is a bad fit for them.
+2. ⭐ THE SHAPE — what runs on the device, what runs on the server, and
+   what the device must NEVER decide: prices, limits, permissions,
+   anything a user could tamper with.
+3. THE DATA MODEL
+   · every table, column, type, nullability, default
+   · money as integer minor units · timestamps as timestamptz, UTC
+   · foreign keys AND what happens on delete for each one
+   · ⭐⭐ FOR EVERY TABLE: who owns this row, and which column proves
+     it? A table where you cannot answer that is a leak waiting to
+     happen — flag it rather than guessing.
+   · RLS policies, written now, enabled and forced
+   · indexes per query, and ⭐ a STABLE sort key for every paginated
+     list — ties with no tiebreaker duplicate rows across pages
+4. THE API — every endpoint with method, path, auth requirement,
+   request shape and response shape. Explicit shapes, never whole rows.
+5. ⭐⭐ THE OLD-BUILD RULE — this API must serve an app build from eight
+   months ago that is still installed and still calling. Every change
+   is additive or a migration. Say how versioning works here.
+6. STATE — server state, local UI state, persisted device state (and
+   where: secure store vs MMKV), and derived state that should NOT be
+   stored at all.
+7. THIRD PARTIES — each with: why · cost · what happens when it is
+   down · ⭐ and whether it needs NATIVE code, because that ends OTA
+   updates for that change.
+8. ⭐ THE FIVE DECISIONS THAT ARE EXPENSIVE TO REVERSE — named, with
+   what each one forecloses.
+9. WHAT BREAKS AT 10x — the specific first thing, not "we'll scale
+   later".
 
-Cover:
-
-1. THE SHAPE
-   What runs on the device, what runs on the server, and what the
-   boundary is. Be explicit about what the device must NEVER decide —
-   prices, permissions, limits, anything a user could tamper with.
-
-2. NAVIGATION
-   The full tree. Which screens require auth. What a deep link into a
-   protected screen does from a COLD START when the token is expired.
-
-3. STATE — draw the four apart and say which is which:
-   · server state (TanStack Query)
-   · local UI state
-   · persisted device state (and where: secure store vs MMKV)
-   · derived state — which should NOT be stored at all
-
-4. THE THIRD-PARTY LIST
-   Every service and library, each with: why · what it costs at 1k
-   users · what happens when it is down · and — for mobile — whether
-   it requires NATIVE code, because that ends OTA for that change.
-
-5. THE FIVE DECISIONS THAT ARE EXPENSIVE TO REVERSE
-   Name them explicitly and say what each one forecloses. Auth provider,
-   the offline model, the payment type, the data model, and the
-   navigation shape are the usual suspects.
-
-6. WHAT WOULD BREAK AT 10x
-   Not "we'll scale later" — which specific thing breaks first, and
-   what the fix would cost then versus now.
-
-7. WHAT I SHOULD BUILD FIRST
-   The one vertical slice that proves the architecture works end to end.
-
-DO NOT produce a generic best-practices architecture. Every choice must
-trace to something in SPEC.md. Where you are guessing, say you are
-guessing. Where two options are genuinely close, say so and give me the
-tiebreaker rather than pretending one is obviously right.
+DO NOT produce a generic best-practice architecture. Every choice traces
+to the PRD. Where you are guessing, say so. Where two options are close,
+give me the tiebreaker instead of pretending one is obvious.
 ```
 
 ```
-⭐⭐ THE GATE — you can name the five expensive decisions and say why
-   each was chosen. If any answer is "it's the default", go back.
+⭐ THE GATE — every table has an owner column. RLS is written, enabled
+   and forced, before any code exists.
 ```
 
 ---
 
-# ⭐ STEP 5 · Database & data model · ⭐⭐ plan mode
+# ⑥ Design flow + app flow
 
 ```
-Read SPEC.md, section 7 especially. Enter plan mode. Do not write code yet.
+Map how this app actually works as an experience. Two different maps —
+do both, they catch different problems.
 
-Design the data model.
+PART 1 — THE APP FLOW (structure)
+· The full navigation tree, every screen
+· Which screens require auth, and what an unauthenticated user hitting
+  one does
+· ⭐ Deep links: what happens on a COLD START into a protected screen
+  when the token is expired
+· Where a push notification lands, including when the app is already
+  open on a different screen
+· What "back" does from every screen — including the first one
+· Modal vs push vs tab, and why
 
-1. THE TABLES
-   Every table with every column, type, nullability, and default.
-   Money as integer minor units. Timestamps as timestamptz, stored UTC.
-   No floats for anything a human counts.
+PART 2 — THE USER FLOW (experience)
+For each of the three most important journeys — starting with first-ever
+open — walk it step by step as the user experiences it:
+· what they see · what they must decide · what could confuse them ·
+  where they could fail · what happens when they do
+· ⭐⭐ Count the taps from app-open to the core action being completed.
+  If it is more than three, say what to cut.
 
-2. THE RELATIONSHIPS
-   Foreign keys, and what happens on delete for each: cascade, restrict,
-   or set null. State the rule for every one — a wrong cascade is how
-   data disappears silently.
+THEN TELL ME:
+· Which screen is doing too much and should be two
+· Which two screens are so similar they should be one
+· ⭐ Where the user is asked for something before they understand why —
+  this is where people quit
+· Any dead end: a screen with no forward action and no clear way back
+· ⭐ Where a permission is requested, and whether that is the moment
+  the user understands why we need it
 
-3. OWNERSHIP — the security-critical part
-   For EVERY table, answer: who owns this row, and which column proves
-   it? Any table where you cannot answer that is a data leak waiting to
-   happen — flag it rather than guessing.
-
-4. RLS POLICIES
-   Write them now, not later. Enabled AND forced. For each policy state
-   in plain English what it allows and to whom.
-   Then answer: if I disabled the client entirely and hit the database
-   with a valid user token, what could I read that is not mine?
-
-5. THE INDEXES
-   Every query the app will run, and the index that serves it.
-   ⭐ Every list that will be paginated needs a STABLE sort — a sort key
-   with ties and no tiebreaker duplicates rows across pages. Name the
-   tiebreaker column for each list.
-
-6. THE MIGRATION PLAN
-   How the first migration runs, and how a later one adds a column
-   without breaking a SIX-MONTH-OLD app build that is still installed
-   and still calling. Expand, migrate, contract — never rename in place.
-
-7. WHAT I WILL WANT IN V2 THAT THIS MAKES HARD
-   Be honest. A model that is right for v1 and impossible for v2 is a
-   bad model, and now is the only cheap time to know.
-
-DO NOT over-normalise for imagined future needs, and do not denormalise
-for imagined performance. Ask about anything in the domain rules you
-are unsure of instead of inventing a rule.
+DO NOT draw the happy path only. The interesting parts of a flow are
+where it breaks.
 ```
 
 ```
-⭐⭐ THE GATE — for every table you can say who owns the row and which
-   column proves it. RLS is written, enabled, and forced.
+⭐ THE GATE — first-open to core action is three taps or fewer, or you
+   know exactly why it cannot be.
 ```
 
 ---
 
-# ⭐⭐ STEP 6 · Edge cases & the failure catalogue
-
-> **This is the step people skip, and it is the one that prevents the rewrite.** Do it before
-> building, not after the bug reports.
+# ⑦ UI/UX enhancement
 
 ```
-Read SPEC.md and the architecture. Do not write code.
+Raise the quality of this app's interface. Assume the current design is
+functional but generic — my goal is that it does not look like it was
+generated.
 
-Produce EDGE-CASES.md — the catalogue of everything that can go wrong.
-For each: what happens, what SHOULD happen, and who handles it (client,
-server, or both).
+1. ⭐⭐ THE GENERIC-DESIGN AUDIT
+   Find every instance of these and replace them:
+   · a purple-to-blue gradient anywhere
+   · glassmorphism / frosted cards
+   · three feature cards with emoji icons
+   · everything centred in one column
+   · copy like "Empower your workflow" or "Seamlessly integrate"
+   · bold weight used everywhere instead of real hierarchy
+   · six shades of one brand colour
+   · animation on everything
+   These are not ugly. They are ANONYMOUS — they read as "nobody
+   decided anything", and users feel it even if they cannot name it.
 
-Work through these categories deliberately. Do not skip one because it
-seems unlikely — the unlikely ones are the ones that ship.
+2. THE FOUNDATION — fix these before anything cosmetic
+   · ONE spacing scale, nothing outside it. Inconsistent padding is
+     the thing nobody consciously notices and everybody feels.
+   · Five type sizes, two weights. Real hierarchy.
+   · Colours named by ROLE not value. One accent, on the primary
+     action only.
+   · Max line length 65–75 characters
+   · Consistent radius and border weight
 
-1. EMPTY AND FIRST-RUN
-   First launch, no data, no permissions. Empty list vs a list filtered
-   to zero — these are two different screens with two different actions.
-   Search with no results. A deleted item still open on another screen.
+3. ⭐ THE EIGHT THAT NEED NO TASTE
+   whitespace (double what feels right) · alignment · contrast · one
+   accent · line length · consistent radius · visible focus and pressed
+   states · hover/active/disabled on everything interactive.
+   A control with no pressed state feels broken on a phone even when
+   it works perfectly.
+
+4. MOBILE FEEL — the things that separate an app from a website
+   · Momentum and overscroll behave natively
+   · Transitions match the platform — do not force iOS onto Android
+   · Haptics on meaningful actions only, never on everything
+   · Keyboard handling: the input stays visible, the layout does not jump
+   · ⭐ Optimistic UI where it is safe — the tap responds instantly
+   · One deliberate motion moment in the whole app, not motion
+     everywhere. Motion everywhere reads as a template.
+
+5. ⭐⭐ THE FIVE STATES, EVERY SCREEN
+   loading (a skeleton shaped like the content) · error (what happened,
+   what to do, retry — and NEVER clear the form) · empty (two states:
+   never-had-any vs filtered-to-zero) · offline · success (visible
+   confirmation — silence reads as failure and people tap twice)
+
+6. ACCESSIBILITY — nearly free, and it is also polish
+   · Tap targets ≥ 44pt/48dp, not touching
+   · ⭐⭐ Text scales with the system font setting WITHOUT CLIPPING —
+     this breaks most layouts and nobody tests it
+   · Every icon-only control has a label
+   · Colour is never the only signal
+   · Reduce-motion respected
+
+Give me the changes ranked by visible impact per unit of effort. Start
+with the ones that change how the whole app feels, not one screen.
+```
+
+```
+⭐ THE GATE — screenshot the main screen. If it has the same shape as a
+   stock template, nothing has been designed yet.
+```
+
+---
+
+# ⑧ Edge cases
+
+**The step that prevents the rewrite.** Do it before building, not after the bug reports.
+
+```
+Produce EDGE-CASES.md — everything that can go wrong with THIS app.
+For each: the trigger · what happens if unhandled · what SHOULD happen ·
+where the fix belongs (client, server, or both).
+
+Work every category deliberately. Do not skip one for being unlikely —
+the unlikely ones are the ones that ship.
+
+1. EMPTY AND FIRST RUN
+   First launch, no data, no permissions · an empty list vs a list
+   filtered to zero (two different screens, two different actions) ·
+   search with no results · an item deleted while open elsewhere
 
 2. NETWORK — the mobile-specific ones
    Offline before a request · offline DURING a request · a captive
    portal that resolves DNS and blocks everything · a request that
-   hangs for 60 seconds instead of failing · a response that arrives
-   after the user navigated away · the same write submitted twice
-   because the first looked stuck.
+   HANGS for 60 seconds instead of failing · a response arriving after
+   the user navigated away · the same write sent twice because the
+   first looked stuck
 
-3. THE LIFECYCLE
-   The OS kills the app mid-form · mid-upload · mid-payment.
-   Backgrounded for an hour and returned to with a stale screen and an
-   expired token. A deep link from a cold start. A push notification
-   tapped while the app is already open on another screen.
+3. LIFECYCLE
+   The OS kills the app mid-form, mid-upload, mid-payment ·
+   backgrounded an hour then reopened with stale data and an expired
+   token · a deep link from cold start · a push tapped while already
+   open elsewhere
 
 4. AUTH
-   The token expires mid-session · expires mid-request · the refresh
-   itself fails · the user logs out on another device · the account is
-   deleted while the app is open · the user is logged in but no longer
-   has permission for the screen they are on.
+   Token expires mid-session · mid-request · the refresh itself fails ·
+   logged out on another device · account deleted while the app is
+   open · still logged in but no longer permitted on this screen
 
 5. DATA AND CONCURRENCY
-   Two devices edit the same row · a queued offline write conflicts on
-   sync · a row is deleted while someone is editing it · a list changes
-   underneath pagination · a number that is zero, negative, enormous,
-   or exactly at a boundary.
+   Two devices editing one row · a queued offline write that conflicts
+   on sync · a row deleted while being edited · a list changing under
+   pagination · zero, negative, enormous, and exactly-at-the-boundary
 
 6. INPUT
    Empty · whitespace only · 10,000 characters · emoji · right-to-left
-   text · a name with an apostrophe · a paste of formatted text · a
-   file that is not what its extension claims.
+   text · an apostrophe in a name · pasted formatted text · a file that
+   is not what its extension claims
 
 7. DEVICE
-   Storage full · the largest system font · the smallest supported
-   screen · rotation mid-action · a permission denied permanently ·
-   low-power mode · a very slow Android.
+   Storage full · largest system font · smallest screen · rotation
+   mid-action · a permission denied permanently · low-power mode ·
+   a genuinely slow Android
 
-8. MONEY, if this app takes payments
-   A double tap on pay · the network drops after charge but before
-   confirmation · a webhook delivered twice · a webhook never delivered ·
-   a refund · a subscription that lapses while offline.
+8. MONEY, if this app takes any
+   Double tap on pay · network drops after the charge but before
+   confirmation · a webhook delivered twice · a webhook never
+   delivered · a refund · a subscription lapsing while offline
 
-For each item give me: the trigger · the current behaviour if unhandled ·
-the correct behaviour · and where the fix belongs.
+9. ABUSE — from step ②
+   Someone using this app the way you did not intend: spam, scraping,
+   harassment, someone uploading something illegal.
 
-Then rank the whole list by (likelihood × damage) and tell me which
-ones must be handled before v1 ships versus which can wait.
+Rank everything by (likelihood × damage) and tell me which must be
+handled before v1 versus which can wait.
 
-DO NOT give me generic error-handling advice. Every item must be
-specific to THIS app and its actual screens.
+DO NOT give me generic error-handling advice. Every item must name the
+actual screen or endpoint in THIS app.
 ```
 
 ```
-⭐⭐ THE GATE — EDGE-CASES.md exists and is ranked. The top ten are in
-   your build plan, not in a "later" list.
-```
-
----
-
-# STEP 7 · The design system
-
-```
-Read SPEC.md. I need the visual foundation before any screen gets built.
-
-Build the design system as tokens plus a small owned component set.
-
-1. TOKENS FIRST — before any component
-   · ONE spacing scale (4/8/12/16/24/32) and nothing outside it
-   · Five type sizes, not eleven. Two weights.
-   · Colours NAMED BY ROLE, never by value: --fg, --fg-muted, --bg,
-     --bg-subtle, --border, --primary, --danger. One accent, used only
-     on the primary action.
-   · One radius. One border weight.
-   · Platform-aware: iOS and Android have different conventions for
-     navigation, back behaviour, and typography. Do not force one onto
-     the other.
-
-2. THE COMPONENT SET — eight, not forty
-   Button, Input, Card, Badge, Skeleton, EmptyState, ErrorState, Sheet.
-   Plus three layout primitives: Stack, Row, Screen.
-   I own this code. Do not wrap a library.
-
-3. EVERY COMPONENT SHIPS ITS STATES
-   Default · pressed · disabled · loading · error. A control with no
-   pressed state feels broken on a phone even when it works.
-
-4. ACCESSIBILITY, BUILT IN NOT BOLTED ON
-   · Tap targets ≥ 44pt iOS / 48dp Android, and not touching each other
-   · Every icon-only control has an accessibility label
-   · Text scales with the system font setting WITHOUT CLIPPING —
-     this is the one that breaks most layouts
-   · Colour is never the only signal
-   · Respect reduce-motion
-
-DO NOT: purple-to-blue gradients, glassmorphism, three feature cards
-with emoji icons, everything centred, or a font-weight-bold everywhere
-layout. That set reads as generated, and it reads that way to users too.
-Real icons at one size and stroke width. One deliberate motion moment
-in the whole app, not motion on everything.
-
-Show me the tokens and ONE component first. I will approve the
-direction before you build the other seven.
-```
-
-```
-⭐ THE GATE — screenshot a screen. If it has the same shape as a stock
-   template, nothing was designed yet.
+⭐⭐ THE GATE — the top ten are in the build plan, not on a "later" list.
 ```
 
 ---
 
-# STEP 8 · Frontend — one screen at a time · ⭐ plan per screen
-
-> **Never ask for "the screens". Ask for one.** A batch of six screens is six times the diff
-> and none of them get read properly.
+# ⑨ How it makes money
 
 ```
-Build the <screen name> screen.
+Now that we know what this app is, who it serves, and what it costs to
+run — work out the business model. Be commercial and be honest.
 
-SPEC: <paste that screen's section from SPEC.md>
-DATA: <which query/mutation it uses>
-NAVIGATION: how it is reached, and what "back" does from here
+1. WHAT IT COSTS ME TO RUN
+   Per user per month, at 100 / 1,000 / 10,000 users. Include hosting,
+   database, storage, push, email/SMS, any AI inference, and the store's
+   cut. ⭐ Tell me the point at which a free user becomes genuinely
+   expensive — that number decides the model.
 
-IT MUST HANDLE ALL FIVE STATES — I will check every one:
- ① LOADING — a skeleton SHAPED LIKE THE CONTENT, not a centred spinner
-    that gets replaced by something a different size. Do not show it at
-    all under 200ms.
- ② ERROR — what happened, what to do, and a retry. Branch by status:
-    401 is not 404 is not 500 is not "you are offline".
-    NEVER clear the user's form on an error.
- ③ EMPTY — and this is TWO states: never-had-any (with the action that
-    creates the first one) versus filtered-to-zero (with clear filters).
- ④ OFFLINE — a real offline state, not an infinite spinner. This is
-    the single most common mobile bug.
- ⑤ SUCCESS — visible confirmation. Silence reads as failure and people
-    tap twice.
+2. THE THREE MODELS THAT COULD WORK HERE
+   Not every model — the three that fit THIS product and THIS user.
+   For each: what is free, what is paid, the price point, and why a
+   user would cross the line.
+   Consider honestly: one-time purchase · subscription · freemium with
+   a limit · usage-based · free with a paid tier for teams · ads
+   (and what ads would do to the experience and to the privacy form).
 
-MOBILE REQUIREMENTS, all of them:
- · Safe areas — notch, status bar, home indicator
- · Nothing hidden behind the keyboard. Test the form with the keyboard
-   OPEN on a small device.
- · No horizontal overflow at the smallest supported width
- · Lists virtualised (FlashList/FlatList). Never .map() over 500 rows.
- · Images resized before display — never a full-resolution photo in a list
- · Every listener and subscription cleaned up on unmount: AppState,
-   NetInfo, keyboard, navigation, dimensions. They do not unmount with
-   the screen.
- · Pull-to-refresh if the list can go stale
+3. ⭐⭐ THE STORE RULE — get this right before building anything
+   · DIGITAL goods, subscriptions, in-app content ⇒ MUST use Apple /
+     Google IAP, and they take 15–30%
+   · PHYSICAL goods, real-world services ⇒ MUST NOT use IAP
+   Say which this app is. Getting it backwards is an automatic
+   rejection and costs a review cycle every time.
+   ⭐ Then re-do the pricing WITH the commission taken out. A price that
+   works at 100% does not always work at 70%.
 
-Keep the diff to this screen. When you are done, tell me:
- · what to look at first
- · what you were unsure about
- · whether you ran it on a device or only the simulator — say which
-```
+4. THE PAYWALL DECISION
+   What exactly is behind it, and at what moment does the user hit it?
+   ⭐ The user must have already felt the value before they are asked.
+   A paywall before value is an uninstall.
 
-```
-⭐ THE GATE — open the screen in airplane mode. If you get a spinner
-   that never resolves, it is not done.
-```
+5. WHAT THE FREE TIER COSTS ME
+   If free users cost real money, what stops abuse? A limit that is
+   generous to a human and hostile to a script.
 
----
+6. THE HONEST ASSESSMENT
+   Would a real person pay this? What would they compare the price to?
+   ⭐ And is this a business or a project? Both are fine — but I want to
+   know which one I am building before I price it like the other.
 
-# STEP 9 · Backend & API · ⭐⭐ plan mode
-
-```
-Read SPEC.md and the data model. Enter plan mode first.
-
-Build the API for <feature>.
-
-EVERY ENDPOINT, WITHOUT EXCEPTION:
- · Input validated at the boundary with an explicit schema. Never spread
-   a request body into a database call — whitelist the fields.
- · Authorization enforced IN THE QUERY, not after loading the row.
-   findByIdAndOwnerId(id, sessionUserId) — not "load, then check".
- · The session user comes from the token. NEVER from anything the
-   client sent.
- · An explicit response shape. Never return a whole row — an explicit
-   shape is an allow-list, and it is how you stop leaking the column
-   someone adds in six months.
- · Pagination with a server-enforced maximum and a STABLE sort.
- · Errors that do not leak internals. No stack traces to the client.
-
-FOR ANYTHING THAT WRITES:
- · Idempotency. Mobile clients retry. The same write WILL arrive twice.
- · A transaction boundary that is explicit and correct.
- · Rate limiting per user and per IP.
-
-FOR ANYTHING THAT CALLS A THIRD PARTY:
- · Connect AND read timeouts, always. The defaults are effectively
-   infinite and one slow dependency exhausts everything.
- · Bounded retries with backoff and jitter. Never retry a 4xx except 429.
- · What the user sees when it is down — degrade, do not hang.
-
-MOBILE-SPECIFIC — this is the one people forget:
- · This API must serve an app build from EIGHT MONTHS AGO that is still
-   installed and still calling. Every change is additive or a migration.
-   Tell me explicitly if anything here would break an older client.
- · Version the API, or have a deliberate reason not to.
-
-Before you write it: list the endpoints with method, path, auth
-requirement, and response shape. I will approve that list first.
+DO NOT give me a generic monetisation menu. Recommend one, with the
+reason, and tell me what would make you change your mind.
 ```
 
 ```
-⭐⭐ THE GATE — the ID-swap test. Log in as user A, request user B's id.
-   Must be 403 or 404. Do it before moving on, not at step 12.
+⭐ THE GATE — you know which payment rail is legal for this app, and
+   the price is set AFTER the store's cut.
 ```
 
 ---
 
-# ⭐⭐ STEP 10 · Offline, sync & lifecycle · ⭐⭐ plan mode
+# ⑩ ⭐⭐ The build plan — the one that makes ⑪ work
 
-> **The layer that separates a real app from a website in a wrapper.** Design it; do not let it
-> emerge.
-
-```
-Read SPEC.md and EDGE-CASES.md sections 2 and 3. Enter plan mode.
-
-Design the offline and lifecycle behaviour.
-
-1. EVERY SCREEN GETS ONE OF THREE ANSWERS — decide per screen, in advance:
-   ① WORKS OFFLINE — cached, and writes queue for later
-   ② READS OFFLINE — cached data with a "last updated" stamp; writes
-      blocked with a clear message
-   ③ NEEDS THE NETWORK — an explicit offline state, never a spinner
-   Give me the table: screen → answer → why.
-
-2. DETECTION THAT ACTUALLY WORKS
-   "Connected" is not "the internet works". A captive portal resolves
-   DNS and blocks everything. Test a real request, not the flag.
-
-3. THE WRITE QUEUE, if anything queues
-   · Every queued write is IDEMPOTENT. It will be sent twice.
-   · What the user sees while it is pending
-   · What happens when it fails permanently — not silence
-   · What happens when the app is KILLED with a queue still pending
-   · Conflict resolution: last-write-wins, or something the user resolves?
-     Say which, and why, per entity.
-
-4. THE LIFECYCLE
-   · Draft state saved AS THE USER TYPES, not on submit. Android kills
-     backgrounded apps freely and an empty form loses everything.
-   · Returning to foreground: refresh stale data, but do NOT stampede
-     every query at once.
-   · A long task that must survive backgrounding — or tell the user to stay.
-   · Deep links from a COLD START, not just when already running.
-
-5. THE COST QUESTION
-   Every background poll costs the user battery and data, and they can
-   see both in Settings. "Drains my battery" is a review you do not
-   recover from. Where am I polling, and can it be a push instead?
-
-DO NOT build a full offline-first sync engine unless SPEC.md actually
-demands it. Say plainly which of the three answers each screen needs
-and build only that.
-```
+> **Do this once, properly.** It is the file that turns five words into a working session.
 
 ```
-⭐⭐ THE GATE — airplane mode, then a throttled lossy connection (worse
-   than offline, because requests HANG instead of failing). Then force-kill
-   mid-action and reopen. No spinner survives.
-```
+Write BUILD-PLAN.md — the phase-by-phase plan for building this app.
+Read PRD.md, TRD.md and EDGE-CASES.md first.
 
----
+This file exists so that in a future session I can say only "build the
+next phase of app" and you will know exactly what to do. Write it for
+that purpose.
 
-# STEP 11 · Testing
+RULES FOR THE PHASES:
+· Each phase is one sitting of work and ends with something I can SEE
+  or USE. Never "set up the data layer" with nothing to look at.
+· ⭐⭐ PHASE 1 IS A VERTICAL SLICE: one real feature, screen through API
+  through database, deployed and working. It proves the architecture
+  before we build twenty screens on top of a wrong assumption.
+· Each phase lists which edge cases from EDGE-CASES.md it must handle.
+  Edge cases are built WITH the feature, never bolted on afterwards.
+· Dependencies are explicit — if phase 7 needs phase 4, say so.
+· Anything touching auth, payments or user data is flagged as needing
+  plan mode before code.
 
-```
-Write tests for <feature>.
+FORMAT — use exactly this, because I will be reading the status marker:
 
-I do not want coverage. I want the tests that would have caught a real
-bug — so start by telling me what could actually break here, then test
-that.
+## Phase N — <name>
+STATUS: NOT STARTED | IN PROGRESS | DONE
+GOAL: <what works when this is finished, in one line>
+BUILD: <the concrete list of what to create or change>
+EDGE CASES: <the specific ones from EDGE-CASES.md this phase owns>
+DONE WHEN: <a test I can actually perform on a device>
+DEPENDS ON: <phases, or none>
+PLAN MODE: <yes/no, and why>
 
-MUST EXIST:
- · ⭐⭐ AN AUTHORIZATION TEST PER RESOURCE — user B gets 403/404 on user
-   A's row. You will not write this unless I ask, and it is the #1 real
-   leak. Write it.
- · The empty case, the one-item case, the many-items case
- · The error path — and that the form is NOT cleared when it fires
- · Boundaries: zero, negative, maximum, one-over-maximum
- · Anything involving money: exact amounts, rounding, double submission
- · Idempotency: the same write twice produces one result
+Order the phases so that the app is USABLE as early as possible and
+stays usable after every phase. I would rather have a working app with
+four features than a broken one with twelve.
 
-FOR THIS APP SPECIFICALLY:
- · Offline → online transitions
- · A queued write that is sent twice
- · Token expiry mid-request
- · The app killed mid-action
+At the end, add a section called CURRENT STATE that says what is built
+so far and what is next. ⭐ You will update this section at the end of
+every phase — that is how the next session knows where it is.
 
-DO NOT write tests that only assert the mock was called. Do not test
-implementation details that break on every refactor. If a test needs
-more setup than the code it tests, say so — that usually means the code
-needs restructuring, not that the test needs more mocks.
-
-Then tell me honestly: what is still untested that worries you?
+DO NOT plan more than 12 phases. If it needs more, v1 is too big and
+you should tell me what to cut.
 ```
 
 ```
-⭐ THE GATE — the authorization test exists and passes for every
-   user-owned resource.
+⭐⭐ THE GATE — every phase ends in something you can see on a device,
+   and phase 1 is a full vertical slice.
 ```
 
 ---
 
-# ⭐⭐ STEP 12 · The security audit
+# ⑪ ⭐⭐ Build the next phase — the one you repeat
 
-> **Run this as a separate pass, adversarially.** The model that wrote the code shares the blind
-> spot that made the bug — so run step 12b in a *different* model.
+**This is the five-word version you actually type.** It works because of ⑩.
 
 ```
-Audit this app for security. Be adversarial. Assume the attacker has
-the APK, can proxy the traffic, and has a valid account of their own.
+Build the next phase of app.
+```
 
-1. AUTHORIZATION — the one that actually leaks
+**⭐ Paste this longer version once, in your first build session** — after that the short one
+is enough, because `CLAUDE.md` and `BUILD-PLAN.md` carry the rules:
+
+```
+Build the next phase of the app.
+
+BEFORE YOU WRITE ANY CODE:
+1. Read BUILD-PLAN.md. Find the first phase not marked DONE.
+2. Tell me which phase you are building, its goal, and its DONE WHEN.
+3. Read the edge cases that phase owns, and PRD.md section 7 for any
+   domain rule that constrains it.
+4. If the phase is flagged PLAN MODE, plan it and STOP for my approval.
+5. If anything in the plan is now wrong or out of date, say so before
+   building rather than building the wrong thing correctly.
+
+WHILE BUILDING:
+· Stay inside this phase. Do not build ahead. Do not refactor things I
+  did not ask about.
+· Every screen ships all five states: loading, error, empty (both
+  kinds), offline, success. Not one of them is optional.
+· Every query filters by the authenticated user, server-side.
+· Every listener and subscription is cleaned up on unmount.
+· Name any dependency you add and why — and say if it needs NATIVE
+  code, because that ends OTA updates for that change.
+
+WHEN THE PHASE IS DONE:
+1. Update BUILD-PLAN.md: mark the phase DONE and rewrite CURRENT STATE.
+2. Tell me: what changed · what to look at first · what worried you.
+3. Tell me honestly whether you ran it on a real device or only the
+   simulator. Say "simulator only" if that is what happened.
+4. Tell me what the next phase is, and stop.
+
+DO NOT claim it works if you have not run it. DO NOT mark a phase DONE
+because the code exists — mark it DONE when its DONE WHEN test passes.
+```
+
+```
+⭐⭐ THE LOOP — ⑪ → /code-review → ⑫ fix → ⑬ security → back to ⑪.
+   Run it every phase, not once at the end. A bug found in the phase
+   that created it costs minutes; the same bug found at step ⑯ costs
+   a store review cycle.
+```
+
+---
+
+# ⑫ Fix the bugs — after `/code-review`
+
+**Run `/code-review` first.** Then paste this with the findings.
+
+```
+Fix these review findings.
+
+For each one, before you change anything:
+· Tell me whether you agree it is a real bug. ⭐ If you think a finding
+  is wrong, say so and explain why — do not "fix" something that is
+  not broken just because a review flagged it.
+· Say what the actual failure is: what input or sequence produces it,
+  and what the user would see.
+
+Then fix them, most severe first, and for each fix tell me:
+· what changed
+· ⭐⭐ WHY THIS CLASS OF BUG HAPPENED — if the same mistake could exist
+  elsewhere in the app, say where and check those places too. One bug
+  is a bug; a pattern is a design problem.
+· whether a test now covers it — and if not, why not
+
+RULES:
+· ⭐ Do not delete or weaken a test to make something pass. If a test
+  is wrong, say the test is wrong and explain.
+· Do not fix a symptom when you can see the cause.
+· Do not refactor beyond the fix. A large diff hides the change I need
+  to review.
+· If a fix reveals a design problem too big for a patch, STOP and tell
+  me rather than building a workaround I will inherit.
+
+At the end: what is still broken that we are choosing to live with,
+and is it written down anywhere?
+```
+
+```
+⭐ THE GATE — you know why each bug happened, not just that it is gone.
+```
+
+---
+
+# ⑬ ⭐⭐ Security check
+
+```
+Do a security audit of everything built so far. Be adversarial. Assume
+the attacker has the APK, can proxy the traffic, and has a valid account
+of their own.
+
+1. ⭐⭐ AUTHORIZATION — the one that actually leaks
    For every endpoint: can a logged-in user reach another user's data
-   by changing an ID? Check list and search endpoints too — they are
+   by changing an ID? Check LIST and SEARCH endpoints too — those are
    the ones people forget to scope.
-   Is authorization in the QUERY, or after loading? After loading is
-   still a leak if the row is returned on any path.
+   Is authorization in the QUERY, or after loading the row? After
+   loading is still a leak if the row is returned on any path.
 
-2. THE BUNDLE
-   What secrets are in it? Assume every string ships. Publishable keys
-   are fine; anything else is not. Tell me exactly what to grep for.
+2. THE BUNDLE — assume every string in it is public forever
+   What secrets are in the build? Publishable keys are fine; anything
+   else is not. Tell me exactly what to grep for.
 
 3. LOCAL STORAGE
-   What is written to disk, and where? Anything personal in AsyncStorage
-   is plain text on the device. Does the query cache persist user data?
-   Does logout clear ALL of it — secure store, cache, files, images?
+   What is written to disk and where? ⭐ Anything personal in
+   AsyncStorage is plain text on the device. Does the query cache
+   persist user data? Does logout clear ALL of it — secure store,
+   cache, files, downloaded images?
 
 4. TRANSPORT
    HTTPS everywhere, no cleartext exception in the Android config.
-   Anything sensitive in a URL — those land in logs and analytics.
+   Anything sensitive in a URL — those land in server logs and analytics.
 
-5. INPUT
-   Every input validated server-side. No request body spread into a DB
-   call. Deep links are untrusted input from ANY app or website — is
-   every parameter validated? Can a deep link perform an action without
-   confirmation?
+5. INPUT AND DEEP LINKS
+   Every input validated server-side. No request body spread into a
+   database call. ⭐⭐ Deep links are untrusted input from ANY app or
+   website — is every parameter validated, and can a deep link perform
+   an action without confirmation?
 
 6. UPLOADS
-   Content validated, size capped, EXIF stripped — photos carry GPS.
+   Content validated, size capped, ⭐ EXIF stripped — photos carry GPS.
 
-7. PRIVACY
-   What leaves the device? Crash reports and analytics are a data store
-   you never designed. Is PII scrubbed before send? Does the store
-   privacy form match what the SDKs actually collect?
+7. PRIVACY — what leaves the device
+   Crash reports and analytics are a data store you never designed and
+   usually the least protected thing you own. Is PII scrubbed before
+   send? Does the store privacy form match what the SDKs actually
+   collect without being asked?
+
+8. ABUSE AND COST
+   What can someone automate against this? Where is rate limiting?
+   ⭐ What is the most expensive thing an attacker can make me pay for?
 
 For each finding: the concrete attack, the file and line, and the fix.
-Rank by real-world exploitability, not theoretical severity.
+Rank by real exploitability, not theoretical severity.
 
-If you find nothing in a category, say so explicitly — do not invent
-findings to seem thorough.
+⭐ If you find nothing in a category, say so explicitly. Do not invent
+findings to look thorough.
 ```
 
-**⭐⭐ STEP 12b — the cross-check, in a different model:**
+**⭐⭐ Then the cross-check — paste this into a DIFFERENT model:**
 
 ```
 Here is a diff. Find bugs. Check specifically:
@@ -764,119 +775,190 @@ If you find nothing, say so — do not invent findings.
 ⭐⭐ THE GATE — three things done BY HAND, not claimed:
    ① unzip your own build and grep it for secrets
    ② the ID-swap test THROUGH A PROXY, as two real accounts
-   ③ log out and confirm nothing personal survives on disk
+   ③ log out, then confirm nothing personal survives on disk
+
+⭐ Also run the scans — your API is a website:
+   ssllabs.com/ssltest ⇒ A · securityheaders.com ⇒ A
+   A grade is a floor, not a certificate. Neither tests whether user A
+   can read user B's data. That is ①.
 ```
 
 ---
 
-# ⭐ STEP 13 · Quality analysis
-
-> **Ask for the honest score.** A model asked "is this good?" will say yes.
+# ⑭ Quality enhancement
 
 ```
-Assess this app's quality honestly, as if you were deciding whether to
-recommend it to someone. I want the real assessment, not encouragement.
+Assess this app's quality honestly, as if deciding whether to recommend
+it to someone. I want the real assessment, not encouragement.
 
 1. WOULD A REAL USER FINISH THE CORE LOOP?
-   Walk it step by step as a first-time user who has not read anything.
-   Where would they hesitate, guess, or give up? Name the exact screen.
+   Walk it as a first-time user who has read nothing. Where would they
+   hesitate, guess, or give up? Name the exact screen.
 
 2. WHAT LOOKS UNFINISHED
    Placeholder text, inconsistent spacing, a screen that does not match
-   the others, an error message written for a developer, a button with
-   no pressed state.
+   the others, an error message written for a developer, a control with
+   no pressed state, an icon that means nothing.
 
 3. THE FIVE-STATE AUDIT
-   Every screen, every list: loading, error, empty, offline, success.
-   Which are missing? Missing states are the most common reason an app
-   feels unfinished.
+   Every screen and list: loading, error, empty (both kinds), offline,
+   success. Which are missing? ⭐ Missing states are the single most
+   common reason an app feels unfinished.
 
-4. PERFORMANCE, HONESTLY
-   Cold start time. Scroll on a LOW-END ANDROID, not an iPhone. Any
-   list not virtualised. Any full-resolution image in a list. App size.
+4. PERFORMANCE, MEASURED NOT GUESSED
+   Cold start time · scroll on a LOW-END ANDROID, not an iPhone · any
+   list not virtualised · any full-resolution image in a list · app
+   size, because every MB costs installs on a slow connection.
 
-5. WHAT WOULD GET A ONE-STAR REVIEW
-   Rank them. Battery drain, data usage, lost work, a spinner that
-   never ends, and "it deleted my thing" are the usual winners.
+5. ⭐ WHAT WOULD GET A ONE-STAR REVIEW
+   Ranked. Battery drain, data usage, lost work, a spinner that never
+   ends, and "it deleted my thing" are the usual winners.
 
-6. WHAT IS ACTUALLY GOOD
+6. THE ROBUSTNESS PASS
+   Rotate · background for ten minutes and return · force-kill
+   mid-action · airplane mode · a throttled lossy connection (worse
+   than offline, because requests HANG instead of failing) · deny every
+   permission · largest system font · storage full.
+   Which of these have actually been tested, and which are assumed?
+
+7. WHAT IS ACTUALLY GOOD
    Say this too — I need to know what to protect during refactors.
 
-7. THE HONEST VERDICT
-   Is this ready to ship to strangers? Not "with some polish" —
-   yes or no, and if no, the specific list standing in the way.
+8. ⭐⭐ THE VERDICT
+   Is this ready for strangers? Not "with some polish" — yes or no, and
+   if no, the specific list standing in the way, ordered.
 
 DO NOT be encouraging. Do not tell me it looks great. If the answer to
-7 is no, lead with that.
+8 is no, lead with that.
 ```
 
-**⭐ Then verify from outside — a grade is a floor, not a certificate:**
-
-| Tool | Point it at | Target |
-|---|---|---|
-| [SSL Labs](https://www.ssllabs.com/ssltest/) | Your **API domain** — your API is a website | A or A+ |
-| [Security Headers](https://securityheaders.com/) | API + your privacy-policy page | A |
-| Play Console **pre-launch report** | Your build — free, real devices, usually ignored | No crashes |
-| Sentry crash-free rate | Production | > 99.5% |
-| `npx license-checker --summary` | Dependencies | No GPL/AGPL |
-
 ```
-⭐⭐ NONE OF THESE TEST WHETHER USER A CAN READ USER B'S DATA.
-   That is step 12, and it needs you and a proxy.
+⭐ THE GATE — you have run it on a cheap Android, not just a simulator.
+   Jank, memory pressure and slow networks show up there first.
 ```
 
 ---
 
-# STEP 14 · Store submission & launch
+# ⑮ How it reaches real users
+
+```
+The app works. Now tell me honestly how anyone finds out it exists.
+
+1. ⭐⭐ WHERE MY USERS ALREADY ARE
+   Not "social media". The specific places the person from the PRD
+   already spends time — subreddits, forums, Discords, WhatsApp
+   groups, YouTube channels, local communities, a professional body.
+   Name them.
+
+2. THE FIRST 100
+   How I get the first hundred users WITHOUT a budget. These come from
+   places that do not scale, and that is fine — that is what the first
+   hundred always are. Be concrete: what do I post, where, and what
+   does it say?
+
+3. ⭐ APP STORE OPTIMISATION — this is free traffic and most people
+   ignore it
+   · The title and subtitle, written for what a person would actually
+     SEARCH, not for what we call it internally
+   · The keyword set
+   · ⭐⭐ The first screenshot — it is seen more than everything else
+     combined and it must show the VALUE, not a login screen
+   · The first three lines of the description, because that is all
+     anyone reads
+   Write these for this app. Give me real text, not advice about text.
+
+4. THE FIRST-OPEN PROBLEM
+   ⭐ Most people who install never come back after day one. What
+   happens in the first 60 seconds, and where exactly do they drop?
+   What is the smallest change that gets them to the core loop faster?
+
+5. WHAT MAKES SOMEONE TELL SOMEONE ELSE
+   The honest answer, or "nothing yet" if that is true — and then what
+   would have to change.
+
+6. WHAT I SHOULD MEASURE
+   Five numbers, not fifty. ⭐ Whatever tells me whether people come
+   BACK, because retention is the only number that means anything
+   early. And say what each number should look like for this to be
+   working.
+
+7. WHAT NOT TO BOTHER WITH YET
+   The marketing activity that feels productive and does nothing at
+   this stage.
+
+DO NOT give me a generic growth playbook. Everything must be specific
+to this app and this user, and something I could do this week.
+```
+
+```
+⭐ THE GATE — you can name three specific places your user already is,
+   and what you would post in each.
+```
+
+---
+
+# ⑯ Play Store — and the App Store
 
 ```
 Prepare this app for store submission. Walk the full checklist and tell
-me what is NOT done — do not tell me what is.
+me what is NOT done. Do not tell me what is done.
 
 CONTENT
- · No placeholder text anywhere. Grep for: lorem, TODO, "Feature One",
-   example.com, John Doe, test@test.
- · Real copy, spell-checked. Every image and icon has an a11y label.
+· No placeholder text anywhere. Grep for: lorem, TODO, "Feature One",
+  example.com, John Doe, test@test.
+· Real copy, spell-checked. Every image and icon has a label.
 
 LAYOUT — on the SMALLEST supported device
- · No horizontal overflow · safe areas respected · nothing behind the
-   keyboard · tap targets ≥ 44pt/48dp · tested at the LARGEST system
-   font size without clipping · landscape works or is deliberately locked
+· No horizontal overflow · safe areas respected · nothing behind the
+  keyboard · tap targets ≥ 44pt/48dp · ⭐ tested at the LARGEST system
+  font size without clipping · landscape works or is deliberately locked
 
 STATES — every screen
- · Offline · empty (both kinds) · error with retry · success feedback ·
-   skeletons not bare spinners
+· Offline · empty (both kinds) · error with retry · success feedback ·
+  skeletons not bare spinners
 
-PAYMENTS — ⭐⭐ this is the #1 rejection and it is binary
- · DIGITAL goods or subscriptions ⇒ MUST use Apple/Google IAP
- · PHYSICAL goods or real-world services ⇒ MUST NOT use IAP
- · Receipts validated SERVER-SIDE. Restore purchases works.
- Tell me which category this app is in and confirm the implementation
- matches. Getting this backwards costs a full review cycle each time.
+⭐⭐ PAYMENTS — the #1 rejection, and it is binary
+· DIGITAL goods or subscriptions ⇒ MUST use Apple/Google IAP
+· PHYSICAL goods or real-world services ⇒ MUST NOT use IAP
+· Receipts validated SERVER-SIDE. Restore purchases works.
+Confirm which category this app is and that the implementation matches.
 
-LEGAL
- · Privacy policy live, reachable, and linked IN-APP — a 404 is a rejection
- · Terms/EULA · in-app account deletion that reaches every system
- · If users can post anything: filter, report, block, and contact info.
-   Apple requires all four.
- · Data-safety / privacy-nutrition form matches what you ACTUALLY
-   collect — including what your SDKs collect without you asking
- · Permission usage strings explain WHY in plain language.
-   "This app needs camera access" is a rejection.
-   "To scan the barcode on your receipt" is not.
+LEGAL — from step ②, now as submission requirements
+· Privacy policy live, reachable, and linked IN-APP — ⭐ a 404 is a
+  rejection
+· Terms / EULA
+· ⭐ In-app account deletion that actually reaches every system —
+  required by Apple if users can create an account
+· If users can post anything: filter, report, block, and contact info.
+  Apple requires all four.
+· ⭐⭐ The data-safety / privacy-nutrition form matches what the app
+  ACTUALLY collects — including what the SDKs collect without asking
+· Permission usage strings explain WHY in plain language.
+  "This app needs camera access" is a rejection.
+  "To scan the barcode on your receipt" is not.
+
+PLAY STORE SPECIFICS
+· Target API level meets the current requirement
+· App signing configured, and the upload key is backed up somewhere
+  I will still have in two years
+· ⭐ Run the PRE-LAUNCH REPORT — free, real devices, and usually
+  ignored. Read the crashes AND the accessibility warnings.
+· Data safety form · content rating questionnaire · the store listing
+  from step ⑮
 
 OPERATIONS — the part that matters after launch
- · Sentry with native symbolication, and a REAL crash triggered once to
-   confirm symbolication works. You find out during the incident otherwise.
- · ⭐⭐ A STAGED ROLLOUT. Never 100% on day one.
- · ⭐⭐ A FORCE-UPDATE MECHANISM — the only kill switch you have for the
-   day a broken version is live and review takes three days.
- · The OTA path tested once, end to end, BEFORE you need it.
- · Tested on: oldest supported iOS · oldest supported Android · one
-   cheap Android · one small screen · one large screen
+· Sentry with native symbolication, and ⭐ a REAL crash triggered once
+  to confirm symbolication works. Otherwise you find out during the
+  incident.
+· ⭐⭐ A STAGED ROLLOUT. Never 100% on day one.
+· ⭐⭐ A FORCE-UPDATE MECHANISM — the only kill switch you have on the
+  day a broken version is live and review takes three days.
+· The OTA path tested end to end BEFORE you need it
+· Tested on: oldest supported iOS · oldest supported Android · one
+  cheap Android · one small screen · one large screen
 
 For each item: done, not done, or not applicable — with a reason.
-Do not mark anything done that you have not actually verified.
+⭐ Do not mark anything done that you have not actually verified.
 ```
 
 ```
@@ -889,17 +971,18 @@ Do not mark anything done that you have not actually verified.
 
 ---
 
-# ⭐ After launch — the four prompts you will actually reuse
+# ⭐ After launch — the four you will actually reuse
 
 | When | Prompt |
 |---|---|
-| **A crash in Sentry** | `Here is a stack trace and the device/OS breakdown. What is the root cause? How many users are affected, and is this OTA-fixable or does it need a store release?` |
-| **A bad review** | `Here is a one-star review. What is the actual underlying problem, which screen is it on, and is it a bug, a missing state, or a misunderstanding?` |
-| **"It's slow"** | `Profile the cold start and the <screen> scroll on a low-end Android. Give me the top three costs by measured milliseconds, not by guess.` |
-| **A new feature** | `Read SPEC.md and EDGE-CASES.md. I want to add <feature>. What does it break? What does it make impossible in v2? Plan mode first.` |
+| **A crash in Sentry** | `Here is a stack trace and the device/OS breakdown. What is the root cause, how many users are affected, and is this OTA-fixable or does it need a store release?` |
+| **A one-star review** | `Here is a review. What is the real underlying problem, which screen is it on, and is it a bug, a missing state, or a misunderstanding?` |
+| **"It feels slow"** | `Profile cold start and the main list scroll on a low-end Android. Give me the top three costs in measured milliseconds, not guesses.` |
+| **A new feature** | `Read PRD.md and EDGE-CASES.md. I want to add this feature. What does it break, and what does it make impossible later? Plan mode first.` |
 
 ---
 
-**The full library:** [folder index](README.md) · **Per-project rules:**
-[CLAUDE-md-template.md](CLAUDE-md-template.md) · **The audit in depth:**
-[10-Ship-Checklist.md](10-Ship-Checklist.md) · **Security detail:** [05-Security.md](05-Security.md)
+**Depth on any line above:** [folder index](README.md) · **Per-project rules:**
+[CLAUDE-md-template.md](CLAUDE-md-template.md) · **Security detail:** [05-Security.md](05-Security.md) ·
+**The full audit:** [10-Ship-Checklist.md](10-Ship-Checklist.md) · **Legal:**
+[12-Legal-and-Compliance.md](12-Legal-and-Compliance.md)
