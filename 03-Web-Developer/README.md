@@ -37,7 +37,8 @@ one specific build.
 | ⭐⭐ [12-Legal-and-Compliance.md](12-Legal-and-Compliance.md) | **The four documents**, consent before tracking, account deletion, ⭐ **dependency and font licences**, email compliance, tax |
 | [13-AI-Features.md](13-AI-Features.md) | ⭐ **If the product itself uses a model** — prompt injection, output as untrusted input, cost, hallucination |
 
-**Reference:** ⭐⭐ [**Verification Tools**](Reference/Verification-Tools.md) — SSL Labs, Security
+**Reference:** ⭐⭐ [**Page Inventory**](Reference/Page-Inventory.md) — every page a complete
+web app has, and what to cut for v1 · ⭐⭐ [**Verification Tools**](Reference/Verification-Tools.md) — SSL Labs, Security
 Headers, DesignMeter, Lighthouse and what each one misses ·
 [Component Libraries](Reference/Component-Libraries.md) · [API Notes](Reference/API-Notes.md)
 

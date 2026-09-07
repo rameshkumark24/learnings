@@ -226,6 +226,11 @@ that. Mark your assumptions as assumptions so I can correct them.
    which pages are public and which are behind auth.
 ```
 
+⭐ **Cross-check the page list against**
+[Reference/Page-Inventory.md](Reference/Page-Inventory.md) — every page a complete web app has.
+Most half-finished products are not missing features, they are missing **a whole surface nobody
+wrote down** (the auth surface alone is eight pages, not one).
+
 ---
 
 # ② Research — risk and legal
@@ -1527,6 +1532,9 @@ OPERATIONS
 
 For each item: done, not done, or not applicable — with a reason.
 ⭐ Do not mark anything done that you have not actually verified.
+
+⭐ Then walk Reference/Page-Inventory.md and tell me which pages
+from it do not exist yet, and which of those genuinely block launch.
 ```
 
 ```
