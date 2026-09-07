@@ -27,6 +27,34 @@
 
 ---
 
+# ⭐ Which track — pick before you start
+
+> **Ten steps before any code is right for a real product and wrong for a weekend build.**
+> Match the process to what you are actually making.
+
+| | **FULL** | **SHORT** |
+|---|---|---|
+| **When** | A real product. Weeks of work. Real users' data. Going to a store. | A weekend build, a prototype, a tool for yourself, or testing an idea |
+| **Think** | ① ② ③ | ① only — and ask it for the top 3 risks at the end |
+| **Document** | ④ ⑤ ⑥ ⑦ ⑧ ⑨ | ④ **short** PRD + ⑤ the data model half + ⑧ edge cases |
+| **Build** | ⑩ then ⑪–⑬ per phase | ⑩ then ⑪–⑫ per phase |
+| **Ship** | ⑭ ⑮ ⑯ | ⑭ if anyone else will use it |
+| **Sessions before code** | ≈ 8–10 | ≈ 3 |
+
+```
+⭐⭐ THE TWO YOU NEVER SKIP, ON EITHER TRACK:
+
+  ⑩ THE BUILD PLAN — or your five words have nothing to read.
+
+  ⑤'s OWNERSHIP QUESTION — "who owns this record and which field
+    proves it?" Answered at design time this costs an hour. Answered
+    after 40 files exist, it is a rewrite of every query you have.
+
+⭐ EVERYTHING ELSE CAN SCALE DOWN. Those two cannot.
+```
+
+---
+
 ## ⭐⭐ Read this once — why "build the next phase of app" works
 
 > You told me your build prompt is five words. **That is correct, and it should stay five words.**
@@ -751,10 +779,54 @@ because the code exists — mark it DONE when its DONE WHEN test passes.
 ```
 
 ```
-⭐⭐ THE LOOP — ⑪ → /code-review → ⑫ fix → ⑬ security → back to ⑪.
-   Run it every phase, not once at the end. A bug found in the phase
-   that created it costs minutes; the same bug found at step ⑯ costs
-   a store review cycle.
+⭐⭐ THE LOOP, PER PHASE:
+
+   ⑪ five words → /code-review → ⑫ fix → [⑬?] → back to ⑪
+
+  ⭐ /code-review AND ⑫ RUN EVERY PHASE. They are cheap, and a bug
+    found in the phase that created it costs minutes — the same bug
+    found at ⑯ costs a store review cycle.
+
+  ⭐⭐ ⑬ IS **NOT** EVERY PHASE. Run the full security check when the
+    phase touched: auth · user data · payments · uploads · deep links ·
+    local storage. If the phase only changed layout or copy,
+    /code-review is enough.
+    ⇒ ⭐ AND ALWAYS RUN THE FULL ⑬ ONCE BEFORE YOU SHIP, whatever the
+      last phase happened to touch.
+```
+
+---
+
+## ⭐ Every third phase — the document check
+
+> **Documents rot, and a stale document is followed confidently.** That is worse than no document:
+> the agent builds to an outdated spec, and it looks like it obeyed you.
+
+```
+Before the next phase, check the documents against what we have built.
+
+Re-read PRD.md, TRD.md and EDGE-CASES.md and tell me:
+
+1. WHAT WE BUILT THAT CONTRADICTS THEM
+   Where does the code now disagree with the document? For each, say
+   which one is right — sometimes the code learned something and the
+   document should change; sometimes we drifted and the code is wrong.
+
+2. WHAT WE DECIDED BUT NEVER WROTE DOWN
+   Decisions made in a build session that live nowhere. These are the
+   ones that get silently reversed three phases later.
+
+3. WHAT IS NOW WRONG OR DEAD
+   Sections describing something we cut, renamed, or replaced.
+
+4. ⭐ WHAT WE HAVE LEARNED THAT CHANGES THE PLAN
+   Anything that should reorder, add, or remove a phase in BUILD-PLAN.md.
+
+Then update the documents. Show me the diff in decisions, not a
+rewritten file.
+
+⭐ If everything still matches, say so plainly and we move on — do not
+invent changes to look thorough.
 ```
 
 ---
@@ -1094,27 +1166,32 @@ For each item: done, not done, or not applicable — with a reason.
 flowchart TD
     subgraph THINK["①–③ THINK · once, at the start"]
         A["① Idea → the complete app"] --> B["② Research<br>risk · legal · competition"]
-        B --> C["③ Harden<br>apply the research to the design"]
+        B --> C["③ Harden<br>apply the research"]
     end
 
-    subgraph DOC["④–⑨ DOCUMENT · the files every future session reads"]
-        D["④ PRD.md"] --> E["⑤ TRD.md"]
+    subgraph DOC["④–⑨ DOCUMENT · once · these files persist"]
+        D["④ PRD.md"] --> E["⑤ TRD.md + data model"]
         E --> F["⑥ Design flow + app flow"]
         F --> G["⑦ UI/UX direction"]
         G --> H["⑧ EDGE-CASES.md"]
         H --> I["⑨ How it makes money"]
     end
 
-    J["⑩ BUILD-PLAN.md<br>the file that makes the next step work"]
+    J["⑩ BUILD-PLAN.md<br>⭐ this is what makes the 5 words work"]
 
     subgraph LOOP["⑪–⑬ BUILD · repeat per phase"]
         K["⑪ build the next phase of app"] --> L["/code-review"]
         L --> M["⑫ Fix the bugs"]
-        M --> N["⑬ Security check"]
+        M --> S{"Did this phase touch auth, user data,<br>payments, uploads, deep links or storage?"}
+        S -->|"yes"| N["⑬ Security check"]
+        S -->|"no — layout or copy only"| SKIP["skip ⑬ this time"]
     end
 
+    DC["⭐ Document check<br>PRD · TRD · EDGE-CASES still true?"]
+
     subgraph SHIP["⑭–⑯ SHIP · once, at the end"]
-        P["⑭ Quality enhancement"] --> Q["⑮ How it reaches real users"]
+        FULLSEC["⑬ FULL security pass<br>⭐⭐ always, whatever the last phase touched"] --> P["⑭ Quality enhancement"]
+        P --> Q["⑮ How it reaches real users"]
         Q --> R["⑯ Play Store"]
     end
 
@@ -1122,10 +1199,48 @@ flowchart TD
     I --> J
     J --> K
     N --> O{"Any phase left<br>in BUILD-PLAN.md?"}
+    SKIP --> O
     O -->|"yes"| K
-    O -->|"no"| P
+    O -.->|"every 3rd phase, first"| DC
+    DC -.-> K
+    O -->|"no — all phases DONE"| FULLSEC
     P -.->|"if the UI still feels generic"| G
     R -.->|"next version"| J
+```
+
+---
+
+## ⭐ What this actually looks like, session by session
+
+| Session | You paste | You get |
+|---|---|---|
+| **1** | ① | The full feature set, including things you had not thought of |
+| **2** | ② | Competitors, risks, legal — with web search on |
+| **3** | ③ | A **changed** feature list. If nothing changed, redo ② |
+| **4** | ④ | `PRD.md` |
+| **5** | ⑤ · ⭐ plan mode | `TRD.md` + the data model |
+| **6** | ⑥ then ⑦ | Flows, then UI direction |
+| **7** | ⑧ | `EDGE-CASES.md` |
+| **8** | ⑨ | The money model |
+| **9** | ⑩ · ⭐ plan mode | `BUILD-PLAN.md` — **the file everything after depends on** |
+| **10** | ⭐⭐ the **long** ⑪, once | Phase 1 built. Now copy its rules into `CLAUDE.md` |
+| **11** | `/code-review` → ⑫ | Bugs fixed, and why they happened |
+| **12** | ⑬ *(phase 1 is a vertical slice, so yes)* | The security pass |
+| **13** | **`build the next phase of app`** | Phase 2 |
+| **14** | `/code-review` → ⑫ | …and repeat 13–14 per phase |
+| **every 3rd** | the document check | Documents that still match reality |
+| **last** | ⑬ full → ⑭ → ⑮ → ⑯ | Shipped |
+
+```
+⭐⭐ AFTER SESSION 10, YOUR TYPING IS BASICALLY:
+
+   "build the next phase of app"
+   /code-review
+   <paste the findings>
+   ...repeat...
+
+  ⭐ THAT IS THE WHOLE POINT. The nine sessions before it exist so
+    that those three lines are enough.
 ```
 
 ---
