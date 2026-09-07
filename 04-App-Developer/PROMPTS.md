@@ -55,7 +55,60 @@ your rules without you pasting them:
 
 ---
 
+# ⭐⭐ These prompts adapt — that is the point
+
+> **A prompt that dictates the answer gets you the prompt's opinion, not the model's.**
+> Every step below gives the model a **floor and a set of questions**, never a fixed answer.
+> The structure is common to all apps; the answers are supposed to differ wildly.
+
+```
+⭐⭐ WHERE EACH PROMPT DELIBERATELY REFUSES TO DECIDE FOR YOU:
+
+  DATA MODEL   ⑥ does not assume tables. Relational, document store,
+               local-first, event log — it must CHOOSE and justify.
+               ⭐ It names the ownership mechanism your stack uses,
+                 rather than assuming one.
+
+  SECURITY     ⑬ starts with THIS app's threat model. A notes app, a
+               health tracker and a marketplace share almost nothing.
+               ⭐ My eight categories are a floor; it must add yours.
+
+  EDGE CASES   ⑧ nine categories are a starting point. A maps app, a
+               camera app and a payments app fail in ways not listed.
+               ⭐ The categories it ADDS are the valuable part.
+
+  UI           ⑦ the spacing and type defaults are a sane starting
+               point, and it is told to argue if your app needs
+               different — density, audience, or subject.
+
+  STACK        ⑤ is told to ARGUE AGAINST my defaults when they fit
+               badly. My stack is a starting position, not a rule.
+
+  PHASES       ⑩ has no fixed count. It cuts scope or says why it
+               cannot, rather than compressing work to hit a number.
+```
+
+**Three lines you can add to any prompt here when you want more range:**
+
+```
+① "Before answering, tell me what is unusual about THIS app compared
+   to a typical one — then let that change your answer."
+
+② "Where my prompt assumes something that does not fit this app, say
+   so and answer the better question instead."
+
+③ "Give me the option I have not considered, even if you do not
+   recommend it."
+```
+
+> ⭐ **And the one that matters most:** if a step's output could have been written for
+> *any* app, it is wrong. Say so and run it again with more specifics.
+
+---
+
 # ① The idea → the complete app
+
+⚙️ **Strongest model · `think hard`** — every later step inherits this one. A shallow answer here costs weeks.
 
 **You have a rough idea. This turns it into a full product without you specifying it.**
 
@@ -115,6 +168,8 @@ I can correct it.
 ---
 
 # ② Research — risk, legal, competition
+
+⚙️ **Strongest model · `think hard` · web search ON** — competitors and regulations must be real and current, not recalled.
 
 ```
 Research this app properly before we design it. Use what we defined in
@@ -177,6 +232,8 @@ I am not a lawyer and neither are you. Mark clearly which items are
 
 # ③ Harden — update it to be safer
 
+⚙️ **Strongest model · `think hard`** — this is judgement about trade-offs, which is exactly where reasoning depth pays.
+
 **The step that closes the loop.** Research is worthless if the design does not change.
 
 ```
@@ -226,6 +283,8 @@ safe option costs too much and the honest trade is to accept it.
 
 # ④ PRD — the product document
 
+⚙️ **Strongest model · standard** — mostly writing down decisions already made. Depth matters less than completeness.
+
 ```
 Write PRD.md from everything in this session.
 
@@ -268,6 +327,8 @@ why, never how.
 
 # ⑤ TRD — the technical document
 
+⚙️ **Strongest model · `ultrathink` · ⭐⭐ PLAN MODE** — the most expensive step to get wrong. Everything is built on it.
+
 ```
 Write TRD.md — how we build what PRD.md describes. Read the PRD first
 and trace every technical choice back to a product requirement.
@@ -277,16 +338,26 @@ and trace every technical choice back to a product requirement.
 2. ⭐ THE SHAPE — what runs on the device, what runs on the server, and
    what the device must NEVER decide: prices, limits, permissions,
    anything a user could tamper with.
-3. THE DATA MODEL
-   · every table, column, type, nullability, default
-   · money as integer minor units · timestamps as timestamptz, UTC
-   · foreign keys AND what happens on delete for each one
-   · ⭐⭐ FOR EVERY TABLE: who owns this row, and which column proves
-     it? A table where you cannot answer that is a leak waiting to
+3. THE DATA MODEL — ⭐ CHOOSE THE SHAPE, THEN JUSTIFY IT
+   Relational is my default, but if a document store, a local-first
+   database, an event log or something else genuinely fits this
+   product better, design THAT and tell me why. Do not force this app
+   into tables because tables are what I usually use.
+
+   Whatever shape you choose, every one of these must be answered:
+   · every entity with its fields, types, and what may be empty
+   · ⭐⭐ OWNERSHIP: for each entity, who owns this record and which
+     field proves it? Anything you cannot answer is a leak waiting to
      happen — flag it rather than guessing.
-   · RLS policies, written now, enabled and forced
-   · indexes per query, and ⭐ a STABLE sort key for every paginated
-     list — ties with no tiebreaker duplicate rows across pages
+   · ⭐ HOW OWNERSHIP IS ENFORCED IN THIS PARTICULAR STORE — row-level
+     security, database rules, API middleware, whatever this stack
+     actually uses. Name the mechanism and write the rules NOW.
+   · what happens on delete, for every relationship
+   · exact types for anything a human counts — money and time must
+     never be floats or naive strings. Say what this stack uses.
+   · the queries this app will actually run, and what makes each fast
+   · ⭐ a STABLE sort for every paginated list — a sort key with ties
+     and no tiebreaker duplicates rows across pages
 4. THE API — every endpoint with method, path, auth requirement,
    request shape and response shape. Explicit shapes, never whole rows.
 5. ⭐⭐ THE OLD-BUILD RULE — this API must serve an app build from eight
@@ -309,13 +380,16 @@ give me the tiebreaker instead of pretending one is obvious.
 ```
 
 ```
-⭐ THE GATE — every table has an owner column. RLS is written, enabled
-   and forced, before any code exists.
+⭐ THE GATE — every entity has an owner you can name, and the rule
+   enforcing it is WRITTEN, in whatever mechanism this stack uses,
+   before any code exists.
 ```
 
 ---
 
 # ⑥ Design flow + app flow
+
+⚙️ **Strongest model · `think hard`** — finding where a flow breaks is a search problem; give it room.
 
 ```
 Map how this app actually works as an experience. Two different maps —
@@ -338,7 +412,8 @@ open — walk it step by step as the user experiences it:
 · what they see · what they must decide · what could confuse them ·
   where they could fail · what happens when they do
 · ⭐⭐ Count the taps from app-open to the core action being completed.
-  If it is more than three, say what to cut.
+  Fewer is usually better — if it is more than about three, say what
+  to cut, or explain why this app genuinely needs them.
 
 THEN TELL ME:
 · Which screen is doing too much and should be two
@@ -362,6 +437,8 @@ where it breaks.
 
 # ⑦ UI/UX enhancement
 
+⚙️ **Strongest model · `think`** · ⭐ attach real screenshots if you can — it cannot critique what it cannot see.
+
 ```
 Raise the quality of this app's interface. Assume the current design is
 functional but generic — my goal is that it does not look like it was
@@ -381,9 +458,13 @@ generated.
    decided anything", and users feel it even if they cannot name it.
 
 2. THE FOUNDATION — fix these before anything cosmetic
+   ⭐ The numbers below are a sane default, not a law. If this app's
+   density, audience or subject calls for something different — a
+   data-heavy tool, a kids' app, a game, something playful — say so
+   and propose the scale that actually fits.
    · ONE spacing scale, nothing outside it. Inconsistent padding is
      the thing nobody consciously notices and everybody feels.
-   · Five type sizes, two weights. Real hierarchy.
+   · A small set of type sizes and two weights. Real hierarchy.
    · Colours named by ROLE not value. One accent, on the primary
      action only.
    · Max line length 65–75 characters
@@ -431,6 +512,8 @@ with the ones that change how the whole app feels, not one screen.
 ---
 
 # ⑧ Edge cases
+
+⚙️ **Strongest model · `ultrathink`** — pure enumeration under pressure. This is the step where extra thinking pays most visibly.
 
 **The step that prevents the rewrite.** Do it before building, not after the bug reports.
 
@@ -489,6 +572,12 @@ the unlikely ones are the ones that ship.
    Someone using this app the way you did not intend: spam, scraping,
    harassment, someone uploading something illegal.
 
+⭐⭐ THESE NINE ARE A FLOOR, NOT A CHECKLIST TO COMPLETE.
+   A maps app, a chat app, a camera app, an offline-first app and a
+   payments app each fail in ways that are not on this list. Add every
+   category THIS app needs that I have not written down — that is the
+   most valuable part of your answer, not the nine I gave you.
+
 Rank everything by (likelihood × damage) and tell me which must be
 handled before v1 versus which can wait.
 
@@ -503,6 +592,8 @@ actual screen or endpoint in THIS app.
 ---
 
 # ⑨ How it makes money
+
+⚙️ **Strongest model · `think hard` · web search ON** — real prices and real commission rates, not remembered ones.
 
 ```
 Now that we know what this app is, who it serves, and what it costs to
@@ -558,6 +649,8 @@ reason, and tell me what would make you change your mind.
 
 # ⑩ ⭐⭐ The build plan — the one that makes ⑪ work
 
+⚙️ **Strongest model · `ultrathink` · ⭐⭐ PLAN MODE** — sequencing is the whole value. Do this once, properly.
+
 > **Do this once, properly.** It is the file that turns five words into a working session.
 
 ```
@@ -599,8 +692,9 @@ At the end, add a section called CURRENT STATE that says what is built
 so far and what is next. ⭐ You will update this section at the end of
 every phase — that is how the next session knows where it is.
 
-DO NOT plan more than 12 phases. If it needs more, v1 is too big and
-you should tell me what to cut.
+⭐ IF V1 GENUINELY NEEDS MORE THAN ABOUT 12 PHASES, say so and tell me
+what to cut — but if cutting would break the product, say THAT instead.
+Do not compress real work into fewer phases to hit a number.
 ```
 
 ```
@@ -611,6 +705,8 @@ you should tell me what to cut.
 ---
 
 # ⑪ ⭐⭐ Build the next phase — the one you repeat
+
+⚙️ **Strongest model · standard** — escalate to `think hard` + plan mode whenever the phase is flagged PLAN MODE.
 
 **This is the five-word version you actually type.** It works because of ⑩.
 
@@ -665,6 +761,8 @@ because the code exists — mark it DONE when its DONE WHEN test passes.
 
 # ⑫ Fix the bugs — after `/code-review`
 
+⚙️ **Strongest model · `think`** — escalate to `think hard` if a bug keeps returning; that means the cause was never found.
+
 **Run `/code-review` first.** Then paste this with the findings.
 
 ```
@@ -705,10 +803,23 @@ and is it written down anywhere?
 
 # ⑬ ⭐⭐ Security check
 
+⚙️ **Strongest model · `ultrathink`** · ⭐⭐ then the cross-check in a **different model** — same model, same blind spot.
+
 ```
 Do a security audit of everything built so far. Be adversarial. Assume
 the attacker has the APK, can proxy the traffic, and has a valid account
 of their own.
+
+⭐⭐ START WITH THE THREAT MODEL FOR **THIS** APP, NOT MY LIST.
+   Before working through anything below, tell me: what is genuinely
+   at stake here, who would attack it, and what would they want?
+   A local-only notes app, a health tracker, a marketplace, a kids'
+   app and a fintech app have completely different answers — and the
+   categories below are a FLOOR, not the whole job.
+   ⇒ ⭐ ADD EVERY CATEGORY THIS APP NEEDS THAT I HAVE NOT LISTED, and
+     say plainly which of mine do not apply here and why.
+
+Then work these:
 
 1. ⭐⭐ AUTHORIZATION — the one that actually leaks
    For every endpoint: can a logged-in user reach another user's data
@@ -787,6 +898,8 @@ If you find nothing, say so — do not invent findings.
 
 # ⑭ Quality enhancement
 
+⚙️ **Strongest model · `think hard`** · ⭐ attach screenshots and real measurements, or you get guesses.
+
 ```
 Assess this app's quality honestly, as if deciding whether to recommend
 it to someone. I want the real assessment, not encouragement.
@@ -840,6 +953,8 @@ DO NOT be encouraging. Do not tell me it looks great. If the answer to
 ---
 
 # ⑮ How it reaches real users
+
+⚙️ **Strongest model · `think hard` · web search ON** — the communities it names must actually exist.
 
 ```
 The app works. Now tell me honestly how anyone finds out it exists.
@@ -898,6 +1013,8 @@ to this app and this user, and something I could do this week.
 ---
 
 # ⑯ Play Store — and the App Store
+
+⚙️ **Any capable model · standard** — this is checklist work. Spend the effort budget on ⑬ instead.
 
 ```
 Prepare this app for store submission. Walk the full checklist and tell
@@ -1023,6 +1140,32 @@ flowchart TD
 
   ⇒ ⭐ MOST OF YOUR TIME IS SPENT IN THE LOOP. Everything before it
     exists to make those five words work.
+```
+
+## ⭐ Where to spend the thinking budget
+
+| Step | Model | Effort | Why |
+|---|---|---|---|
+| ⑤ TRD · ⑩ Build plan | strongest | ⭐⭐ `ultrathink` **+ plan mode** | Most expensive to get wrong; everything is built on them |
+| ⑧ Edge cases · ⑬ Security | strongest | ⭐⭐ `ultrathink` | Enumeration under pressure — depth converts directly into findings |
+| ① ② ③ ⑥ ⑨ ⑭ ⑮ | strongest | ⭐ `think hard` | Judgement and trade-offs |
+| ⑦ UI · ⑫ Fix bugs | strongest | `think` | Escalate if a bug returns — that means the cause was never found |
+| ④ PRD · ⑪ Build · ⑯ Store | strongest / any | standard | Writing down decisions, or checklist work |
+
+```
+⭐⭐ THE THREE MULTIPLIERS, IN ORDER OF EFFECT:
+
+ ① ⭐⭐ PLAN MODE ON ⑤ AND ⑩. Bigger effect than any wording change.
+    You review the thinking BEFORE the code exists, which is the only
+    point where changing your mind is still cheap.
+
+ ② ⭐ WEB SEARCH ON FOR ②, ⑨ AND ⑮. Competitors, regulations, prices
+    and communities must be REAL and CURRENT. Recalled facts are the
+    one place these prompts will quietly hand you something wrong.
+
+ ③ ⭐ SCREENSHOTS AND MEASUREMENTS FOR ⑦ AND ⑭. A model cannot
+    critique a screen it has not seen, or a load time nobody timed.
+    Without them you get plausible generic advice.
 ```
 
 **Eight things that decide whether this works:**
