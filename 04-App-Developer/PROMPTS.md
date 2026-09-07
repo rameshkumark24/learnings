@@ -971,6 +971,115 @@ For each item: done, not done, or not applicable — with a reason.
 
 ---
 
+# ⭐⭐ The order — and how to run it
+
+```mermaid
+flowchart TD
+    subgraph THINK["①–③ THINK · once, at the start"]
+        A["① Idea → the complete app"] --> B["② Research<br>risk · legal · competition"]
+        B --> C["③ Harden<br>apply the research to the design"]
+    end
+
+    subgraph DOC["④–⑨ DOCUMENT · the files every future session reads"]
+        D["④ PRD.md"] --> E["⑤ TRD.md"]
+        E --> F["⑥ Design flow + app flow"]
+        F --> G["⑦ UI/UX direction"]
+        G --> H["⑧ EDGE-CASES.md"]
+        H --> I["⑨ How it makes money"]
+    end
+
+    J["⑩ BUILD-PLAN.md<br>the file that makes the next step work"]
+
+    subgraph LOOP["⑪–⑬ BUILD · repeat per phase"]
+        K["⑪ build the next phase of app"] --> L["/code-review"]
+        L --> M["⑫ Fix the bugs"]
+        M --> N["⑬ Security check"]
+    end
+
+    subgraph SHIP["⑭–⑯ SHIP · once, at the end"]
+        P["⑭ Quality enhancement"] --> Q["⑮ How it reaches real users"]
+        Q --> R["⑯ Play Store"]
+    end
+
+    C --> D
+    I --> J
+    J --> K
+    N --> O{"Any phase left<br>in BUILD-PLAN.md?"}
+    O -->|"yes"| K
+    O -->|"no"| P
+    P -.->|"if the UI still feels generic"| G
+    R -.->|"next version"| J
+```
+
+---
+
+## How to run this effectively
+
+```
+⭐⭐ THE SHAPE OF IT:
+   ①–⑩ you do ONCE, at the start.
+   ⑪–⑬ you REPEAT, every single phase.
+   ⑭–⑯ you do ONCE, at the end.
+
+  ⇒ ⭐ MOST OF YOUR TIME IS SPENT IN THE LOOP. Everything before it
+    exists to make those five words work.
+```
+
+**Eight things that decide whether this works:**
+
+```
+① ⭐⭐ SAVE THE ARTIFACTS AS REAL FILES IN THE REPO.
+   PRD.md · TRD.md · EDGE-CASES.md · BUILD-PLAN.md
+   ⭐ A document that lives only in a chat is gone next session. The
+     whole library depends on these four existing on disk.
+
+② ⭐ ONE PROMPT PER SESSION for steps ①–⑩.
+   These are thinking steps. Chaining two of them in one session
+   gives you shallow answers to both.
+
+③ ⭐⭐ NEVER SKIP ⑩. Without BUILD-PLAN.md your five-word build
+   prompt has nothing to read, and every session guesses differently.
+
+④ ⭐ PUT CLAUDE.md AT THE REPO ROOT ONCE.
+   It is read automatically every session, so your rules apply
+   without pasting them. That is what keeps ⑪ at five words.
+
+⑤ ⭐⭐ RUN THE LOOP EVERY PHASE — NOT ONCE AT THE END.
+   A bug found in the phase that created it costs minutes.
+   The same bug found at ⑯ costs a store review cycle.
+
+⑥ ⭐ ANSWER THE GATE BEFORE MOVING ON.
+   Each step ends in one. A gate you skipped is a rewrite you
+   scheduled for later without noticing.
+
+⑦ ⭐ WHEN A SESSION GETS LONG OR GOES SIDEWAYS, START A NEW ONE.
+   The files carry the context now. Nothing is lost — that is the
+   entire point of ④–⑩.
+
+⑧ ⭐ PASTE ONE PROMPT, NOT THE LIBRARY.
+   The agent should get the step it is on, not all sixteen.
+```
+
+**When something goes wrong mid-project:**
+
+| What happened | Where to go |
+|---|---|
+| The agent built the wrong thing | ⭐ `BUILD-PLAN.md` was vague — fix the phase's **DONE WHEN**, not the prompt |
+| Every session feels different | ⭐⭐ `CLAUDE.md` is missing, or `CURRENT STATE` is not being updated |
+| The app works but feels cheap | ⑦, then ⑭ |
+| Scope has quietly doubled | Re-read the **NOT IN V1** section of `PRD.md` |
+| A bug keeps coming back | ⑫ — you fixed the symptom, not the class |
+| You do not know what to build next | ⭐ Read `CURRENT STATE` at the bottom of `BUILD-PLAN.md` |
+
+```
+⭐ AND THE ONE HABIT WORTH MORE THAN ANY PROMPT HERE:
+   AT THE END OF EVERY PHASE, RUN IT ON A REAL, CHEAP ANDROID.
+   ⭐⭐ The simulator has no real network, no real memory pressure and
+     no real GPU. It will not show you what your users will see.
+```
+
+---
+
 # ⭐ After launch — the four you will actually reuse
 
 | When | Prompt |
