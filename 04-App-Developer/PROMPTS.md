@@ -1302,9 +1302,11 @@ flowchart TD
    It is read automatically every session, so your rules apply
    without pasting them. That is what keeps ⑪ at five words.
 
-⑤ ⭐⭐ RUN THE LOOP EVERY PHASE — NOT ONCE AT THE END.
+⑤ ⭐⭐ /code-review AND ⑫ EVERY PHASE — NOT ONCE AT THE END.
    A bug found in the phase that created it costs minutes.
    The same bug found at ⑯ costs a store review cycle.
+   ⭐ ⑬ is the exception: only when the phase touched auth, data,
+     payments, uploads, deep links or storage — plus once before ship.
 
 ⑥ ⭐ ANSWER THE GATE BEFORE MOVING ON.
    Each step ends in one. A gate you skipped is a rewrite you
