@@ -4,15 +4,16 @@
 
 ---
 
-## ⭐⭐ Start here — the two memory files
+## ⭐⭐ Start here — the three files that do the work
 
 | File | What it is |
 |---|---|
-| ⭐⭐ **[AGENT-CONTEXT.md](AGENT-CONTEXT.md)** | **The memory.** Keep it in Notion. Paste it into a new chat before asking for any mobile work. Written *to the agent*, self-sufficient. |
+| ⭐⭐ **[PROMPTS.md](PROMPTS.md)** | **The 14-step prompt library.** Research → spec → architecture → database → edge cases → build → test → security → quality → launch. One copy-paste prompt per step, each with a gate. **Start here when you are building something.** |
+| ⭐⭐ **[AGENT-CONTEXT.md](AGENT-CONTEXT.md)** | **The memory.** Keep it in Notion. Paste it into a new chat before asking for any mobile work. Written *to the agent*, self-sufficient. It is also Step 0 of the prompt library. |
 | ⭐⭐ **[CLAUDE-md-template.md](CLAUDE-md-template.md)** | **The per-project rules file.** Lives at the repo root, read automatically every session. |
 
-> ⭐ **Use both.** Notion carries the rules *between* projects. `CLAUDE.md` carries the specifics *of*
-> this one.
+> ⭐ **Use all three.** `PROMPTS.md` is the sequence. Notion carries the rules *between* projects.
+> `CLAUDE.md` carries the specifics *of* this one.
 
 ---
 

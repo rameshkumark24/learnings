@@ -2,6 +2,9 @@
 
 > **This file is the memory.** Paste it into a new chat (or keep it in Notion and link it) before
 > asking for any mobile work. It is written **to the agent**, not to me. It is self-sufficient.
+>
+> ⭐⭐ **Building something start to finish?** This file is Step 0 of
+> [**PROMPTS.md**](PROMPTS.md) — fourteen steps, one copy-paste prompt each.
 
 ---
 
