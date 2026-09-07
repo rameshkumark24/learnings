@@ -194,6 +194,11 @@ I can correct it.
    feature list contains things you did not think of.
 ```
 
+⭐ **Cross-check the screen list against**
+[Reference/Screen-Inventory.md](Reference/Screen-Inventory.md) — every screen a complete app has.
+Most half-finished apps are not missing features, they are missing **a whole surface nobody wrote
+down**: permission priming, the force-update screen, and the store listing itself.
+
 ---
 
 # ② Research — risk and legal
@@ -1247,6 +1252,9 @@ OPERATIONS — the part that matters after launch
 
 For each item: done, not done, or not applicable — with a reason.
 ⭐ Do not mark anything done that you have not actually verified.
+
+⭐ Then walk Reference/Screen-Inventory.md and tell me which screens
+from it do not exist yet, and which of those genuinely block submission.
 ```
 
 ```

@@ -46,7 +46,8 @@
 | [13-AI-Features.md](13-AI-Features.md) | ⭐ **If the app uses a model** — the key cannot be in the app, serve the prompt from your server, the store's AI rules |
 | ⭐⭐ [14-Zero-to-Published.md](14-Zero-to-Published.md) | **The whole sequence, once** — idea → spec → oracle → build → real-device test → store → 12 testers × 14 days → production access → 🔴 **the AdMob throttle** → launch → ratings. Every trap is one that actually happened. |
 
-**Reference:** ⭐⭐ [**Play Store Templates**](Reference/Play-Store-Templates.md) — every piece
+**Reference:** ⭐⭐ [**Screen Inventory**](Reference/Screen-Inventory.md) — every screen a complete
+app has, and what to cut for v1 · ⭐⭐ [**Play Store Templates**](Reference/Play-Store-Templates.md) — every piece
 of writing a launch demands, fill-in-the-blank · ⭐⭐ [**Verification Tools**](Reference/Verification-Tools.md) — what to scan, and
 the mobile checks no scanner does · [Component Libraries](Reference/Component-Libraries.md) ·
 [**Distribution Options**](Reference/Distribution-Options.md) — with and without the stores

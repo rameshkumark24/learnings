@@ -210,4 +210,5 @@ TEAM — if it is multiplayer
 **Design:** [02-UI-System.md](../02-UI-System.md) · **SEO:**
 [08-SEO-and-Meta.md](../08-SEO-and-Meta.md) · **Legal:**
 [12-Legal-and-Compliance.md](../12-Legal-and-Compliance.md) · **Launch:**
-[10-Ship-Checklist.md](../10-Ship-Checklist.md)
+[10-Ship-Checklist.md](../10-Ship-Checklist.md) · **Mobile equivalent:**
+[`04-App-Developer/Reference/Screen-Inventory.md`](../../04-App-Developer/Reference/Screen-Inventory.md)

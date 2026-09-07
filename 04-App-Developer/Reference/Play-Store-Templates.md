@@ -1,5 +1,8 @@
 # 📝 Play Store Templates — the text you need, in order
 
+> ⭐ **What each asset is for, and what makes it good:**
+> [Screen-Inventory.md §1](Screen-Inventory.md). This file is the text itself.
+
 **Fill-in-the-blank versions of every piece of writing a Play launch demands.**
 Companion to ⭐⭐ [14-Zero-to-Published.md](../14-Zero-to-Published.md), which is the sequence.
 
